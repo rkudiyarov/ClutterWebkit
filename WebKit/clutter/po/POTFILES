@@ -1,0 +1,13 @@
+# List of source files which contain translatable strings.
+WebKit/clutter/WebCoreSupport/ChromeClientClutter.cpp
+WebKit/clutter/WebCoreSupport/ContextMenuClientClutter.cpp
+WebKit/clutter/WebCoreSupport/FullscreenVideoController.cpp
+WebKit/clutter/webkit/webkitdownload.cpp
+WebKit/clutter/webkit/webkitsoupauthdialog.c
+WebKit/clutter/webkit/webkitwebframe.cpp
+WebKit/clutter/webkit/webkitwebhistoryitem.cpp
+WebKit/clutter/webkit/webkitwebinspector.cpp
+WebKit/clutter/webkit/webkitwebnavigationaction.cpp
+WebKit/clutter/webkit/webkitwebsettings.cpp
+WebKit/clutter/webkit/webkitwebview.cpp
+WebCore/platform/clutter/LocalizedStringsClutter.cpp

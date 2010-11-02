@@ -134,7 +134,7 @@
 // Also generates errors on wx on Windows, presumably because these functions
 // are used from wx headers.
 #if !PLATFORM(QT) && !PLATFORM(WX) && !PLATFORM(CHROMIUM)
-#include <wtf/DisallowCType.h>
+//#include <wtf/DisallowCType.h>
 #endif
 
 #if COMPILER(MSVC)

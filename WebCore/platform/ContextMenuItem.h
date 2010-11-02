@@ -43,6 +43,8 @@ class NSMenuItem;
 typedef struct tagMENUITEMINFOW* LPMENUITEMINFO;
 #elif PLATFORM(GTK)
 typedef struct _GtkMenuItem GtkMenuItem;
+#elif PLATFORM(CLUTTER)
+typedef struct _ClutterActor ClutterActor;
 #elif PLATFORM(QT)
 #include <QAction>
 #elif PLATFORM(WX)
@@ -201,6 +203,23 @@ namespace WebCore {
         bool checked;
         bool enabled;
     };
+#elif PLATFORM(CLUTTER)
+    struct PlatformMenuItemDescription {
+        PlatformMenuItemDescription()
+            : type(ActionType)
+            , action(ContextMenuItemTagNoAction)
+            /*, subMenu(0)*/
+            , checked(false)
+            , enabled(true)
+        {}
+
+        ContextMenuItemType type;
+        ContextMenuAction action;
+        String title;
+        /*void* subMenu;*/
+        bool checked;
+        bool enabled;
+    };
 #elif PLATFORM(WX)
     struct PlatformMenuItemDescription {
         PlatformMenuItemDescription()
@@ -285,6 +304,8 @@ namespace WebCore {
         // FIXME: Do we need a keyboard accelerator here?
 #if PLATFORM(GTK)
         static GtkMenuItem* createNativeMenuItem(const PlatformMenuItemDescription&);
+#elif PLATFORM(CLUTTER)
+        static ClutterActor* createNativeMenuItem(const PlatformMenuItemDescription&);
 #endif
 
     private:

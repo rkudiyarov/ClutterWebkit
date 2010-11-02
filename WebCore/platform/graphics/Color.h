@@ -46,6 +46,10 @@ QT_END_NAMESPACE
 typedef struct _GdkColor GdkColor;
 #endif
 
+#if PLATFORM(CLUTTER)
+typedef struct _ClutterColor ClutterColor;
+#endif
+
 #if PLATFORM(WX)
 class wxColour;
 #endif
@@ -125,6 +129,11 @@ public:
 #if PLATFORM(GTK)
     Color(const GdkColor&);
     // We can't sensibly go back to GdkColor without losing the alpha value
+#endif
+
+#if PLATFORM(CLUTTER)
+    Color(const ClutterColor&);
+    operator ClutterColor() const;
 #endif
 
 #if PLATFORM(WX)

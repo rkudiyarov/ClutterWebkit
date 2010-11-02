@@ -4,6 +4,10 @@ HTML_FEATURES :=
 WEBCORE_CSS_PROPERTY_NAMES := $(WebCore)/css/CSSPropertyNames.in
 WEBCORE_CSS_VALUE_KEYWORDS := $(WebCore)/css/CSSValueKeywords.in
 
+webresourcesdir :=
+webinspectordir :=
+webinspectorimagesdir :=
+
 webcore_cppflags += \
 	-I$(srcdir)/WebCore \
 	-I$(srcdir)/WebCore/accessibility \
@@ -68,6 +72,7 @@ webcore_cppflags += \
 	-I$(top_builddir)/DerivedSources/JavaScriptCore \
 	-DDATA_DIR=\"${datadir}\"
 
+if USE_GTK
 webcoregtk_cppflags += \
 	-DWEBKITGTK_API_VERSION_STRING=\"@WEBKITGTK_API_VERSION@\" \
 	-DWTF_USE_SOUP=1 \
@@ -79,6 +84,20 @@ webcoregtk_cppflags += \
 	-I$(srcdir)/WebCore/platform/graphics/gtk \
 	-I$(srcdir)/WebCore/platform/gtk \
 	-I$(srcdir)/WebCore/platform/network/soup
+endif
+if USE_CLUTTER
+webcoreclutter_cppflags += \
+	-DWEBKITCLUTTER_API_VERSION_STRING=\"@WEBKITCLUTTER_API_VERSION@\" \
+	-DWTF_USE_SOUP=1 \
+	-I$(srcdir)/WebCore/accessibility/clutter \
+	-I$(srcdir)/WebCore/loader/clutter \
+	-I$(srcdir)/WebCore/page/clutter \
+	-I$(srcdir)/WebCore/platform/graphics/cairo \
+	-I$(srcdir)/WebCore/platform/graphics/gstreamer \
+	-I$(srcdir)/WebCore/platform/graphics/clutter \
+	-I$(srcdir)/WebCore/platform/clutter \
+	-I$(srcdir)/WebCore/platform/network/soup
+endif
 
 webcore_built_nosources += \
 	DerivedSources/WebCore/tokenizer.cpp
@@ -1287,8 +1306,16 @@ webcore_sources += \
 	WebCore/editing/Editor.h \
 	WebCore/editing/EditorInsertAction.h \
 	WebCore/editing/FormatBlockCommand.cpp \
-	WebCore/editing/FormatBlockCommand.h \
-	WebCore/editing/gtk/SelectionControllerGtk.cpp \
+	WebCore/editing/FormatBlockCommand.h
+if USE_GTK
+webcore_sources += \
+	WebCore/editing/gtk/SelectionControllerGtk.cpp
+endif
+if USE_CLUTTER
+webcore_sources += \
+	WebCore/editing/clutter/SelectionControllerClutter.cpp
+endif
+webcore_sources += \
 	WebCore/editing/htmlediting.cpp \
 	WebCore/editing/htmlediting.h \
 	WebCore/editing/HTMLInterchange.cpp \
@@ -3438,6 +3465,7 @@ webcore_sources += \
 	WebCore/xml/XSLTUnicodeSort.cpp \
 	WebCore/xml/XSLTUnicodeSort.h
 
+if USE_GTK
 webcoregtk_sources += \
 	WebCore/accessibility/gtk/AccessibilityObjectAtk.cpp \
 	WebCore/accessibility/gtk/AccessibilityObjectWrapperAtk.cpp \
@@ -3583,12 +3611,142 @@ webcoregtk_sources += \
 	WebCore/plugins/gtk/PluginDataGtk.cpp \
 	WebCore/plugins/gtk/PluginPackageGtk.cpp \
 	WebCore/plugins/gtk/PluginViewGtk.cpp
+endif
+if USE_CLUTTER
+webcoreclutter_sources += \
+	WebCore/accessibility/clutter/AccessibilityObjectClutter.cpp \
+	WebCore/bindings/js/ScriptControllerClutter.cpp \
+	WebCore/page/clutter/DragControllerClutter.cpp \
+	WebCore/page/clutter/EventHandlerClutter.cpp \
+	WebCore/page/clutter/FrameClutter.cpp \
+	WebCore/platform/graphics/cairo/CairoPath.h \
+	WebCore/platform/graphics/cairo/CairoUtilities.cpp \
+	WebCore/platform/graphics/cairo/CairoUtilities.h \
+	WebCore/platform/graphics/cairo/ContextShadowCairo.cpp \
+	WebCore/platform/graphics/cairo/FloatRectCairo.cpp \
+	WebCore/platform/graphics/cairo/FontCairo.cpp \
+	WebCore/platform/graphics/cairo/FontCustomPlatformData.h \
+	WebCore/platform/graphics/cairo/FontPlatformData.h \
+	WebCore/platform/graphics/cairo/GradientCairo.cpp \
+	WebCore/platform/graphics/cairo/GraphicsContextCairo.cpp \
+	WebCore/platform/graphics/cairo/GraphicsContextPlatformPrivateCairo.h \
+	WebCore/platform/graphics/cairo/ImageBufferCairo.cpp \
+	WebCore/platform/graphics/cairo/ImageBufferData.h \
+	WebCore/platform/graphics/cairo/ImageCairo.cpp \
+	WebCore/platform/graphics/cairo/OwnPtrCairo.cpp \
+	WebCore/platform/graphics/cairo/OwnPtrCairo.h \
+	WebCore/platform/graphics/cairo/PathCairo.cpp \
+	WebCore/platform/graphics/cairo/PatternCairo.cpp \
+	WebCore/platform/graphics/cairo/PlatformRefPtrCairo.cpp \
+	WebCore/platform/graphics/cairo/PlatformRefPtrCairo.h \
+	WebCore/platform/graphics/cairo/TransformationMatrixCairo.cpp \
+	WebCore/platform/graphics/gstreamer/DataSourceGStreamer.cpp \
+	WebCore/platform/graphics/gstreamer/DataSourceGStreamer.h \
+	WebCore/platform/graphics/gstreamer/GOwnPtrGStreamer.cpp \
+	WebCore/platform/graphics/gstreamer/GOwnPtrGStreamer.h \
+	WebCore/platform/graphics/gstreamer/GStreamerGWorld.cpp \
+	WebCore/platform/graphics/gstreamer/GStreamerGWorld.h \
+	WebCore/platform/graphics/gstreamer/ImageGStreamerCairo.cpp \
+	WebCore/platform/graphics/gstreamer/ImageGStreamer.h \
+	WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp \
+	WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.h \
+	WebCore/platform/graphics/gstreamer/PlatformVideoWindowClutter.cpp \
+	WebCore/platform/graphics/gstreamer/PlatformVideoWindow.h \
+	WebCore/platform/graphics/gstreamer/VideoSinkGStreamer.cpp \
+	WebCore/platform/graphics/gstreamer/VideoSinkGStreamer.h \
+	WebCore/platform/graphics/gstreamer/WebKitWebSourceGStreamer.cpp \
+	WebCore/platform/graphics/gstreamer/WebKitWebSourceGStreamer.h \
+	WebCore/platform/graphics/clutter/ColorClutter.cpp \
+	WebCore/platform/graphics/clutter/FontClutter.cpp \
+	WebCore/platform/graphics/clutter/IconClutter.cpp \
+	WebCore/platform/graphics/clutter/ImageBufferClutter.cpp \
+	WebCore/platform/graphics/clutter/ImageClutter.cpp \
+	WebCore/platform/graphics/clutter/IntPointClutter.cpp \
+	WebCore/platform/graphics/clutter/IntRectClutter.cpp \
+	WebCore/platform/clutter/ClipboardClutter.cpp \
+	WebCore/platform/clutter/ClipboardClutter.h \
+	WebCore/platform/clutter/ClipboardUtilitiesClutter.cpp \
+	WebCore/platform/clutter/ClipboardUtilitiesClutter.h \
+	WebCore/platform/clutter/ContextMenuClutter.cpp \
+	WebCore/platform/clutter/ContextMenuItemClutter.cpp \
+	WebCore/platform/clutter/CursorClutter.cpp \
+	WebCore/platform/clutter/CursorClutter.h \
+	WebCore/platform/clutter/DragDataClutter.cpp \
+	WebCore/platform/clutter/DragImageClutter.cpp \
+	WebCore/platform/clutter/EventLoopClutter.cpp \
+	WebCore/platform/clutter/FileChooserClutter.cpp \
+	WebCore/platform/clutter/FileSystemClutter.cpp \
+	WebCore/platform/clutter/GeolocationServiceClutter.cpp \
+	WebCore/platform/clutter/GeolocationServiceClutter.h \
+	WebCore/platform/clutter/KeyEventClutter.cpp \
+	WebCore/platform/clutter/KURLClutter.cpp \
+	WebCore/platform/clutter/Language.cpp \
+	WebCore/platform/clutter/LocalizedStringsClutter.cpp \
+	WebCore/platform/clutter/LoggingClutter.cpp \
+	WebCore/platform/clutter/MIMETypeRegistryClutter.cpp \
+	WebCore/platform/clutter/MouseEventClutter.cpp \
+	WebCore/platform/clutter/PasteboardClutter.cpp \
+	WebCore/platform/clutter/PasteboardHelper.cpp \
+	WebCore/platform/clutter/PasteboardHelper.h \
+	WebCore/platform/clutter/PlatformScreenClutter.cpp \
+	WebCore/platform/clutter/PopupMenuClutter.cpp \
+	WebCore/platform/clutter/PopupMenuClutter.h \
+	WebCore/platform/clutter/RenderThemeClutter.cpp \
+	WebCore/platform/clutter/RenderThemeClutter.h \
+	WebCore/platform/clutter/ScrollbarThemeClutter.cpp \
+	WebCore/platform/clutter/ScrollbarThemeClutter.h \
+	WebCore/platform/clutter/ScrollViewClutter.cpp \
+	WebCore/platform/clutter/SearchPopupMenuClutter.cpp \
+	WebCore/platform/clutter/SearchPopupMenuClutter.h \
+	WebCore/platform/clutter/SharedBufferClutter.cpp \
+	WebCore/platform/clutter/SharedTimerClutter.cpp \
+	WebCore/platform/clutter/SoundClutter.cpp \
+	WebCore/platform/clutter/TemporaryLinkStubs.cpp \
+	WebCore/platform/clutter/WheelEventClutter.cpp \
+	WebCore/platform/clutter/WidgetClutter.cpp \
+	WebCore/platform/image-decoders/bmp/BMPImageDecoder.cpp \
+	WebCore/platform/image-decoders/bmp/BMPImageDecoder.h \
+	WebCore/platform/image-decoders/bmp/BMPImageReader.cpp \
+	WebCore/platform/image-decoders/bmp/BMPImageReader.h \
+	WebCore/platform/image-decoders/cairo/ImageDecoderCairo.cpp \
+	WebCore/platform/image-decoders/gif/GIFImageDecoder.cpp \
+	WebCore/platform/image-decoders/gif/GIFImageDecoder.h \
+	WebCore/platform/image-decoders/gif/GIFImageReader.cpp \
+	WebCore/platform/image-decoders/gif/GIFImageReader.h \
+	WebCore/platform/image-decoders/ico/ICOImageDecoder.cpp \
+	WebCore/platform/image-decoders/ico/ICOImageDecoder.h \
+	WebCore/platform/image-decoders/ImageDecoder.cpp \
+	WebCore/platform/image-decoders/ImageDecoder.h \
+	WebCore/platform/image-decoders/jpeg/JPEGImageDecoder.cpp \
+	WebCore/platform/image-decoders/jpeg/JPEGImageDecoder.h \
+	WebCore/platform/image-decoders/png/PNGImageDecoder.cpp \
+	WebCore/platform/image-decoders/png/PNGImageDecoder.h \
+	WebCore/platform/network/soup/AuthenticationChallenge.h \
+	WebCore/platform/network/soup/CookieJarSoup.cpp \
+	WebCore/platform/network/soup/CookieJarSoup.h \
+	WebCore/platform/network/soup/GOwnPtrSoup.cpp \
+	WebCore/platform/network/soup/GOwnPtrSoup.h \
+	WebCore/platform/network/soup/ResourceError.h \
+	WebCore/platform/network/soup/ResourceHandleSoup.cpp \
+	WebCore/platform/network/soup/ResourceRequest.h \
+	WebCore/platform/network/soup/ResourceRequestSoup.cpp \
+	WebCore/platform/network/soup/ResourceResponse.h \
+	WebCore/platform/network/soup/ResourceResponseSoup.cpp \
+	WebCore/platform/network/soup/SocketStreamError.h \
+	WebCore/platform/network/soup/SocketStreamHandle.h \
+	WebCore/platform/network/soup/SocketStreamHandleSoup.cpp \
+	WebCore/plugins/clutter/PluginDataClutter.cpp \
+	WebCore/plugins/clutter/PluginPackageClutter.cpp \
+	WebCore/plugins/clutter/PluginViewClutter.cpp
+endif
 
+if USE_GTK
 if TARGET_X11
 webcoregtk_sources += \
 	WebCore/plugins/gtk/gtk2xtbin.c \
 	WebCore/plugins/gtk/gtk2xtbin.h \
 	WebCore/plugins/gtk/xembed.h
+endif
 endif
 
 if TARGET_WIN32
@@ -3604,6 +3762,7 @@ endif
 # icu unicode backend
 # ----
 if USE_ICU_UNICODE
+if USE_GTK
 webcoregtk_sources += \
 	WebCore/platform/text/TextCodecICU.cpp \
 	WebCore/platform/text/TextCodecICU.h \
@@ -3611,15 +3770,32 @@ webcoregtk_sources += \
 	WebCore/platform/text/TextBreakIteratorInternalICU.h \
 	WebCore/platform/text/gtk/TextBreakIteratorInternalICUGtk.cpp
 endif
+if USE_CLUTTER
+webcoreclutter_sources += \
+	WebCore/platform/text/TextCodecICU.cpp \
+	WebCore/platform/text/TextCodecICU.h \
+	WebCore/platform/text/TextBreakIteratorICU.cpp \
+	WebCore/platform/text/TextBreakIteratorInternalICU.h \
+	WebCore/platform/text/clutter/TextBreakIteratorInternalICUClutter.cpp
+endif
+endif
 
 # ----
 # glib unicode backend
 # ----
 if USE_GLIB_UNICODE
+if USE_GTK
 webcoregtk_sources += \
 	WebCore/platform/text/gtk/TextCodecGtk.cpp \
 	WebCore/platform/text/gtk/TextCodecGtk.h \
 	WebCore/platform/text/gtk/TextBreakIteratorGtk.cpp
+endif
+if USE_CLUTTER
+webcoreclutter_sources += \
+	WebCore/platform/text/clutter/TextCodecClutter.cpp \
+	WebCore/platform/text/clutter/TextCodecClutter.h \
+	WebCore/platform/text/clutter/TextBreakIteratorClutter.cpp
+endif
 endif
 
 
@@ -3643,6 +3819,7 @@ endif # END ENABLE_FAST_MOBILE_SCROLLING
 # FreeType font backend
 # ---
 if USE_FREETYPE
+if USE_GTK
 webcoregtk_cppflags += -DUSE_FREETYPE=1
 webcoregtk_sources += \
 	WebCore/platform/graphics/cairo/FontCacheFreeType.cpp \
@@ -3651,20 +3828,43 @@ webcoregtk_sources += \
 	WebCore/platform/graphics/cairo/FontPlatformDataFreeType.h \
 	WebCore/platform/graphics/cairo/GlyphPageTreeNodeCairo.cpp \
 	WebCore/platform/graphics/cairo/SimpleFontDataCairo.cpp
+endif
+if USE_CLUTTER
+webcoreclutter_cppflags += -DUSE_FREETYPE=1
+webcoreclutter_sources += \
+	WebCore/platform/graphics/cairo/FontCacheFreeType.cpp \
+	WebCore/platform/graphics/cairo/FontCustomPlatformData.cpp \
+	WebCore/platform/graphics/cairo/FontPlatformDataFreeType.cpp \
+	WebCore/platform/graphics/cairo/FontPlatformDataFreeType.h \
+	WebCore/platform/graphics/cairo/GlyphPageTreeNodeCairo.cpp \
+	WebCore/platform/graphics/cairo/SimpleFontDataCairo.cpp
+endif
 endif # END USE_FREETYPE
 
 # ---
 # Pango font backend
 # ---
 if USE_PANGO
+if USE_GTK
 webcoregtk_cppflags += -DUSE_PANGO=1
 webcoregtk_sources += \
-	WebCore/platform/graphics/gtk/FontCachePango.cpp \
-	WebCore/platform/graphics/gtk/FontCustomPlatformDataPango.cpp \
-	WebCore/platform/graphics/gtk/FontPlatformDataPango.cpp \
-	WebCore/platform/graphics/gtk/FontPlatformDataPango.h \
-	WebCore/platform/graphics/gtk/GlyphPageTreeNodePango.cpp \
-	WebCore/platform/graphics/gtk/SimpleFontDataPango.cpp
+    WebCore/platform/graphics/gtk/FontCachePango.cpp \
+    WebCore/platform/graphics/gtk/FontCustomPlatformDataPango.cpp \
+    WebCore/platform/graphics/gtk/FontPlatformDataPango.cpp \
+    WebCore/platform/graphics/gtk/FontPlatformDataPango.h \
+    WebCore/platform/graphics/gtk/GlyphPageTreeNodePango.cpp \
+    WebCore/platform/graphics/gtk/SimpleFontDataPango.cpp
+endif
+if USE_CLUTTER
+webcoreclutter_cppflags += -DUSE_PANGO=1
+webcoreclutter_sources += \
+    WebCore/platform/graphics/clutter/FontCachePango.cpp \
+    WebCore/platform/graphics/clutter/FontCustomPlatformDataPango.cpp \
+    WebCore/platform/graphics/clutter/FontPlatformDataPango.cpp \
+    WebCore/platform/graphics/clutter/FontPlatformDataPango.h \
+    WebCore/platform/graphics/clutter/GlyphPageTreeNodePango.cpp \
+    WebCore/platform/graphics/clutter/SimpleFontDataPango.cpp
+endif
 endif # END USE_PANGO
 
 # ----
@@ -4470,6 +4670,7 @@ DerivedSources/WebCore/CSSGrammar.cpp: $(WebCore)/css/CSSGrammar.y
 	rm -f $(GENSOURCES_WEBCORE)/CSSGrammar.cpp.h $(GENSOURCES_WEBCORE)/CSSGrammar.hpp
 
 # user agent style sheets
+if USE_GTK
 USER_AGENT_STYLE_SHEETS = \
 	$(WebCore)/css/html.css \
 	$(WebCore)/css/mathml.css \
@@ -4479,6 +4680,18 @@ USER_AGENT_STYLE_SHEETS = \
 	$(WebCore)/css/wml.css \
 	$(WebCore)/css/mediaControls.css \
 	$(WebCore)/css/mediaControlsGtk.css
+endif
+if USE_CLUTTER
+USER_AGENT_STYLE_SHEETS = \
+	$(WebCore)/css/html.css \
+	$(WebCore)/css/mathml.css \
+	$(WebCore)/css/quirks.css \
+	$(WebCore)/css/view-source.css \
+	$(WebCore)/css/svg.css \
+	$(WebCore)/css/wml.css \
+	$(WebCore)/css/mediaControls.css \
+	$(WebCore)/css/mediaControlsClutter.css
+endif
 
 # new-style JavaScript bindings
 SCRIPTS_BINDINGS = \
@@ -4575,8 +4788,16 @@ EXTRA_DIST += \
 	WebCore/css/maketokenizer \
 	WebCore/css/makevalues.pl \
 	WebCore/css/mathml.css \
-	WebCore/css/mediaControls.css \
-	WebCore/css/mediaControlsGtk.css \
+	WebCore/css/mediaControls.css
+if USE_GTK
+EXTRA_DIST += \
+	WebCore/css/mediaControlsGtk.css
+endif
+if USE_CLUTTER
+EXTRA_DIST += \
+	WebCore/css/mediaControlsClutter.css
+endif
+EXTRA_DIST += \
 	WebCore/css/quirks.css \
 	WebCore/css/svg.css \
 	WebCore/css/SVGCSSPropertyNames.in \
@@ -4608,7 +4829,12 @@ EXTRA_DIST += \
 	WebCore/xml/XPathGrammar.y
 
 # Installing web inspector files
-webinspectordir = ${datadir}/webkitgtk-@WEBKITGTK_API_VERSION@/webinspector
+if USE_GTK
+    webinspectordir += ${datadir}/webkitgtk-@WEBKITGTK_API_VERSION@/webinspector
+endif
+if USE_CLUTTER
+    webinspectordir += ${datadir}/webkit-clutter-@WEBKITGTK_API_VERSION@/webinspector
+endif
 dist_webinspector_DATA = \
 	$(WebCore)/English.lproj/localizedStrings.js \
 	DerivedSources/WebCore/InspectorBackendStub.js \
@@ -4616,7 +4842,12 @@ dist_webinspector_DATA = \
 	$(shell ls $(WebCore)/inspector/front-end/*.html) \
 	$(shell ls $(WebCore)/inspector/front-end/*.css)
 
-webinspectorimagesdir = ${datadir}/webkitgtk-@WEBKITGTK_API_VERSION@/webinspector/Images
+if USE_GTK
+    webinspectorimagesdir += ${datadir}/webkitgtk-@WEBKITGTK_API_VERSION@/webinspector/Images
+endif
+if USE_CLUTTER
+    webinspectorimagesdir += ${datadir}/webkit-clutte-@WEBKITGTK_API_VERSION@/webinspector/Images
+endif
 dist_webinspectorimages_DATA = \
 	$(shell ls $(WebCore)/inspector/front-end/Images/*.gif) \
 	$(shell ls $(WebCore)/inspector/front-end/Images/*.png)
@@ -4634,7 +4865,12 @@ ${GENSOURCES_INSPECTOR}/inspector.html: $(WebCore)/inspector/front-end/*.html \
 	$(AM_V_at)cp ${dist_webinspector_DATA} ${GENSOURCES_INSPECTOR}
 	$(AM_V_at)cp ${dist_webinspectorimages_DATA} ${GENSOURCES_INSPECTOR}/images
 
-webresourcesdir = ${datadir}/webkitgtk-@WEBKITGTK_API_VERSION@/images
+if USE_GTK
+    webresourcesdir += ${datadir}/webkitgtk-@WEBKITGTK_API_VERSION@/images
+endif
+if USE_CLUTTER
+    webresourcesdir += ${datadir}/webkit-clutter-@WEBKITGTK_API_VERSION@/images
+endif
 dist_webresources_DATA = \
 	$(WebCore)/Resources/textAreaResizeCorner.png \
 	$(WebCore)/Resources/nullPlugin.png \

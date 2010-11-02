@@ -48,6 +48,10 @@ typedef long LPARAM;
 typedef struct _GdkEventKey GdkEventKey;
 #endif
 
+#if PLATFORM(CLUTTER)
+typedef struct _ClutterKeyEvent ClutterKeyEvent;
+#endif
+
 #if PLATFORM(QT)
 QT_BEGIN_NAMESPACE
 class QKeyEvent;
@@ -114,6 +118,9 @@ namespace WebCore {
 #if PLATFORM(GTK)
             , m_gdkEventKey(0)
 #endif
+#if PLATFORM(CLUTTER)
+            , m_clutterEventKey(0)
+#endif
 #if PLATFORM(QT)
             , m_qtEvent(0)
 #endif
@@ -176,6 +183,11 @@ namespace WebCore {
         GdkEventKey* gdkEventKey() const;
 #endif
 
+#if PLATFORM(CLUTTER)
+        PlatformKeyboardEvent(ClutterKeyEvent*);
+        ClutterKeyEvent* clutterEventKey() const;
+#endif
+
 #if PLATFORM(QT)
         PlatformKeyboardEvent(QKeyEvent*);
         QKeyEvent* qtEvent() const { return m_qtEvent; }
@@ -226,6 +238,9 @@ namespace WebCore {
 #endif
 #if PLATFORM(GTK)
         GdkEventKey* m_gdkEventKey;
+#endif
+#if PLATFORM(CLUTTER)
+        ClutterKeyEvent *m_clutterEventKey;
 #endif
 #if PLATFORM(QT)
         QKeyEvent* m_qtEvent;

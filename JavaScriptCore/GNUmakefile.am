@@ -15,8 +15,16 @@ javascriptcore_cppflags += \
 	-I$(srcdir)/JavaScriptCore/runtime \
 	-I$(srcdir)/JavaScriptCore/wtf \
 	-I$(srcdir)/JavaScriptCore/wtf \
-	-I$(srcdir)/JavaScriptCore/wtf/gobject \
-	-I$(srcdir)/JavaScriptCore/wtf/gtk \
+	-I$(srcdir)/JavaScriptCore/wtf/gobject
+if USE_GTK
+javascriptcore_cppflags += \
+	-I$(srcdir)/JavaScriptCore/wtf/gtk
+endif
+if USE_CLUTTER
+javascriptcore_cppflags += \
+	-I$(srcdir)/JavaScriptCore/wtf/clutter
+endif
+javascriptcore_cppflags += \
 	-I$(srcdir)/JavaScriptCore/wtf/text \
 	-I$(srcdir)/JavaScriptCore/wtf/unicode \
 	-I$(srcdir)/JavaScriptCore/yarr \
@@ -445,9 +453,18 @@ javascriptcore_sources += \
 	JavaScriptCore/wtf/gobject/GOwnPtr.h \
 	JavaScriptCore/wtf/gobject/GRefPtr.cpp \
 	JavaScriptCore/wtf/gobject/GRefPtr.h \
-	JavaScriptCore/wtf/gobject/GTypedefs.h \
+	JavaScriptCore/wtf/gobject/GTypedefs.h
+if USE_GTK
+javascriptcore_sources += \
 	JavaScriptCore/wtf/gtk/MainThreadGtk.cpp \
-	JavaScriptCore/wtf/gtk/ThreadingGtk.cpp \
+	JavaScriptCore/wtf/gtk/ThreadingGtk.cpp
+endif
+if USE_CLUTTER
+javascriptcore_sources += \
+    JavaScriptCore/wtf/clutter/MainThreadClutter.cpp \
+    JavaScriptCore/wtf/clutter/ThreadingClutter.cpp
+endif
+javascriptcore_sources += \
 	JavaScriptCore/wtf/HashCountedSet.h \
 	JavaScriptCore/wtf/HashFunctions.h \
 	JavaScriptCore/wtf/HashIterators.h \
@@ -589,7 +606,7 @@ JavaScriptCore/pcre/chartables.c: $(srcdir)/JavaScriptCore/pcre/dftables
 	$(AM_V_GEN)$(PERL) $^ $@
 
 bin_PROGRAMS += \
-	Programs/jsc-@WEBKITGTK_API_MAJOR_VERSION@$(EXEEXT)
+	Programs/jsc-@WEBKIT_PLATFORM_API_MAJOR_VERSION@$(EXEEXT)
 
 noinst_PROGRAMS += \
 	Programs/jsc \
@@ -628,10 +645,10 @@ Programs_minidom_LDFLAGS = \
 	-no-fast-install
 
 # jsc
-Programs/jsc-@WEBKITGTK_API_MAJOR_VERSION@$(EXEEXT): Programs/jsc$(EXEEXT)
+Programs/jsc-@WEBKIT_PLATFORM_API_MAJOR_VERSION@$(EXEEXT): Programs/jsc$(EXEEXT)
 	$(AM_V_GEN)cp -f Programs/jsc$(EXEEXT) Programs/jsc-@WEBKITGTK_API_MAJOR_VERSION@$(EXEEXT)
-Programs_jsc_@WEBKITGTK_API_MAJOR_VERSION@_LDADD =
-Programs_jsc_@WEBKITGTK_API_MAJOR_VERSION@_SOURCES =
+Programs_jsc_@WEBKIT_PLATFORM_API_MAJOR_VERSION@_LDADD =
+Programs_jsc_@WEBKIT_PLATFORM_API_MAJOR_VERSION@_SOURCES =
 
 Programs_jsc_SOURCES = \
 	JavaScriptCore/jsc.cpp
@@ -678,5 +695,5 @@ CLEANFILES += \
 	JavaScriptCore/runtime/StringPrototype.lut.h \
 	JavaScriptCore/pcre/chartables.c \
 	Programs/jsc \
-	Programs/jsc-@WEBKITGTK_API_MAJOR_VERSION@ \
+    Programs/jsc-@WEBKIT_PLATFORM_API_MAJOR_VERSION@ \
 	Programs/minidom

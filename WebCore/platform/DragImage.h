@@ -47,7 +47,7 @@ typedef struct HBITMAP__* HBITMAP;
 class wxDragImage;
 #elif PLATFORM(CHROMIUM)
 #include "DragImageRef.h"
-#elif PLATFORM(GTK)
+#elif PLATFORM(GTK) || PLATFORM(CLUTTER)
 typedef struct _cairo_surface cairo_surface_t;
 #elif PLATFORM(HAIKU)
 class BBitmap;
@@ -74,7 +74,7 @@ namespace WebCore {
     typedef HBITMAP DragImageRef;
 #elif PLATFORM(WX)
     typedef wxDragImage* DragImageRef;
-#elif PLATFORM(GTK)
+#elif PLATFORM(GTK) || PLATFORM(CLUTTER)
     typedef cairo_surface_t* DragImageRef;
 #elif PLATFORM(HAIKU)
     typedef BBitmap* DragImageRef;

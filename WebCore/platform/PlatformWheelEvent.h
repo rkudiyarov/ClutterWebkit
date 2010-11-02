@@ -32,6 +32,10 @@
 typedef struct _GdkEventScroll GdkEventScroll;
 #endif
 
+#if PLATFORM(CLUTTER)
+typedef struct _ClutterScrollEvent ClutterScrollEvent;
+#endif
+
 #if PLATFORM(EFL)
 typedef struct _Evas_Event_Mouse_Wheel Evas_Event_Mouse_Wheel;
 #endif
@@ -122,6 +126,10 @@ namespace WebCore {
 
 #if PLATFORM(GTK)
         PlatformWheelEvent(GdkEventScroll*);
+#endif
+
+#if PLATFORM(CLUTTER)
+        PlatformWheelEvent(ClutterScrollEvent*);
 #endif
 
 #if PLATFORM(EFL)

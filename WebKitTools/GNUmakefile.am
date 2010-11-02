@@ -1,3 +1,4 @@
+if USE_GTK
 noinst_PROGRAMS += \
 	Programs/DumpRenderTree \
 	Programs/GtkLauncher \
@@ -183,3 +184,4 @@ TestNetscapePlugin_libtestnetscapeplugin_la_LDFLAGS = \
 
 CLEANFILES += TestNetscapePlugin/libtestnetscapeplugin.la
 endif
+endif # if USE_GTK

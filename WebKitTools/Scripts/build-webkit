@@ -109,7 +109,7 @@ my @features = (
       define => "ENABLE_EVENTSOURCE", default => 1, value => \$eventsourceSupport },
 
     { option => "filters", desc => "Toggle Filters support",
-      define => "ENABLE_FILTERS", default => (isAppleWebKit() || isGtk() || isQt() || isEfl()), value => \$filtersSupport },
+      define => "ENABLE_FILTERS", default => (isAppleWebKit() || isGtk() || isQt() || isEfl() || isClutter()), value => \$filtersSupport },
 
     { option => "geolocation", desc => "Toggle Geolocation support",
       define => "ENABLE_GEOLOCATION", default => (isAppleWebKit() || isGtk()), value => \$geolocationSupport },
@@ -249,6 +249,7 @@ Usage: $programName [options] [options to pass to build system]
   --gtk                             Build the GTK+ port
   --qt                              Build the Qt port
   --efl                             Build the EFL port
+  --clutter                         Build the Clutter port
   --inspector-frontend              Copy changes to the inspector front-end files to the build directory
 
   --install-headers=<path>          Set installation path for the headers (Qt only)
@@ -317,7 +318,7 @@ for my $dir (@projects, @otherDirs) {
 my @options = ();
 
 # enable autotool options accordingly
-if (isGtk()) {
+if (isGtk() || isClutter()) {
     @options = @ARGV;
     foreach (@features) {
         push @options, autotoolsFlag(${$_->{value}}, $_->{option});
@@ -325,6 +326,9 @@ if (isGtk()) {
 
     push @options, "--prefix=" . $prefixPath if defined($prefixPath);
     push @options, "--makeargs=" . $makeArgs if defined($makeArgs);
+    
+    push @options, "--with-clutter" if isClutter();
+    push @options, "--without-gtk" if isClutter();
 } elsif (isAppleMacWebKit()) {
     push @options, XcodeOptions();
 
@@ -453,14 +457,16 @@ for my $dir (@projects) {
     chdir $dir or die;
     my $result = 0;
 
-    # For Gtk and Qt the WebKit project builds all others
-    if ((isGtk() || isQt()) && $dir ne "WebKit") {
+    # For Gtk, Qt and Clutter the WebKit project builds all others
+    if ((isGtk() || isQt() || isClutter()) && $dir ne "WebKit") {
         chdir ".." or die;
         next;
     }
 
     if (isGtk()) {
         $result = buildGtkProject($dir, $clean,  @options);
+    } elsif (isClutter()) {
+        $result = buildClutterProject($dir, $clean,  @options);
     } elsif (isQt()) {
         $result = buildQMakeQtProject($dir, $clean, @options);
     } elsif (isAppleMacWebKit()) {

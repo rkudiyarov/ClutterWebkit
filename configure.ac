@@ -36,7 +36,9 @@ AC_CONFIG_SRCDIR([WebCore/config.h])
 dnl # Libtool library version, not to confuse with API version
 dnl # see http://www.gnu.org/software/libtool/manual/html_node/Libtool-versioning.html
 LIBWEBKITGTK_VERSION=2:0:2
+LIBWEBKITCLUTTER_VERSION=1:0:0
 AC_SUBST([LIBWEBKITGTK_VERSION])
+AC_SUBST([LIBWEBKITCLUTTER_VERSION])
 
 AM_INIT_AUTOMAKE([foreign subdir-objects tar-ustar])
 
@@ -177,59 +179,110 @@ AC_SUBST([WINMM_LIBS])
 AC_SUBST([SHLWAPI_LIBS])
 AC_SUBST([OLE32_LIBS])
 
+BACKEND_API_VERSION=
 
 # determine the GTK+ version to use
 AC_MSG_CHECKING([the GTK+ version to use])
 AC_ARG_WITH([gtk],
-        [AS_HELP_STRING([--with-gtk=2.0|3.0], [the GTK+ version to use (default: 2.0)])],
+        [AS_HELP_STRING([--with-gtk=2.0|3.0|no], [the GTK+ version to use (default: 2.0)])],
         [case "$with_gtk" in
-        2.0|3.0) ;;
+        2.0|3.0|no) ;;
         *) AC_MSG_ERROR([invalid GTK+ version specified]) ;;
         esac],
         [with_gtk=2.0])
 AC_MSG_RESULT([$with_gtk])
 
-case "$with_gtk" in
-     2.0) GTK_REQUIRED_VERSION=2.10
-          GTK_API_VERSION=2.0
-          WEBKITGTK_API_MAJOR_VERSION=1
-          WEBKITGTK_API_MINOR_VERSION=0
-          WEBKITGTK_API_VERSION=1.0
-          WEBKITGTK_PC_NAME=webkit
-          GAIL_PC_NAME=gail
-          GAIL_REQUIRED_VERSION=1.8
-          ;;
-     3.0) GTK_REQUIRED_VERSION=2.91
-          GTK_API_VERSION=3.0
-          WEBKITGTK_API_MAJOR_VERSION=3
-          WEBKITGTK_API_MINOR_VERSION=0
-          WEBKITGTK_API_VERSION=3.0
-          WEBKITGTK_PC_NAME=webkitgtk
-          GAIL_PC_NAME=gail-3.0
-          GAIL_REQUIRED_VERSION=2.90.4
-          ;;
-esac
+AS_IF([test "$with_gtk" != "no"], [
+    case "$with_gtk" in
+         2.0) GTK_REQUIRED_VERSION=2.10
+              GTK_API_VERSION=2.0
+              WEBKITGTK_API_MAJOR_VERSION=1
+              WEBKITGTK_API_MINOR_VERSION=0
+              WEBKITGTK_API_VERSION=1.0
+              WEBKITGTK_PC_NAME=webkit
+              GAIL_PC_NAME=gail
+              GAIL_REQUIRED_VERSION=1.8
+              ;;
+         3.0) GTK_REQUIRED_VERSION=2.91
+              GTK_API_VERSION=3.0
+              WEBKITGTK_API_MAJOR_VERSION=3
+              WEBKITGTK_API_MINOR_VERSION=0
+              WEBKITGTK_API_VERSION=3.0
+              WEBKITGTK_PC_NAME=webkitgtk
+              GAIL_PC_NAME=gail-3.0
+              GAIL_REQUIRED_VERSION=2.90.4
+              ;;
+    esac
+    
+    WEBKIT_PLATFORM_API_MAJOR_VERSION=$WEBKITGTK_API_MAJOR_VERSION
+    
+    AC_SUBST([WEBKITGTK_API_MAJOR_VERSION])
+    AC_SUBST([WEBKITGTK_API_MINOR_VERSION])
+    AC_SUBST([WEBKITGTK_API_VERSION])
+    AC_SUBST([WEBKITGTK_PC_NAME])
+    AC_SUBST([GTK_API_VERSION])
 
-AC_SUBST([WEBKITGTK_API_MAJOR_VERSION])
-AC_SUBST([WEBKITGTK_API_MINOR_VERSION])
-AC_SUBST([WEBKITGTK_API_VERSION])
-AC_SUBST([WEBKITGTK_PC_NAME])
-AC_SUBST([GTK_API_VERSION])
+    # determine the GDK/GTK+ target
+    AC_MSG_CHECKING([the target windowing system])
+    AC_ARG_WITH(target,
+                AC_HELP_STRING([--with-target=@<:@x11/win32/quartz/directfb@:>@],
+                               [Select webkit target [default=x11]]),
+                [],[with_target="x11"])
+
+    case "$with_target" in
+         x11|win32|quartz|directfb) ;;
+         *) AC_MSG_ERROR([Invalid target: must be x11, quartz, win32, or directfb.]) ;;
+    esac
+
+    AC_MSG_RESULT([$with_target])
+    
+    with_clutter=no
+    WEBKIT_LIBRARY_NAME="webkitgtk_${WEBKITGTK_API_MAJOR_VERSION}_${WEBKITGTK_API_MINOR_VERSION}"
+    WEBKIT_PLATFORM_DIR="gtk"
+    BACKEND_API_VERSION=$GTK_API_VERSION
+], [
+    # without gtk
+    AC_MSG_CHECKING([for clutter dependency])
+    AC_ARG_WITH([clutter],
+            [AS_HELP_STRING([--with-clutter=no|yes], [whether we should use clutter as a backend (default: no)])],
+            [case "$with_clutter" in
+            yes|no) ;;
+            *) AC_MSG_ERROR([invalid Clutter argument specified]) ;;
+            esac],
+            [with_clutter=no])
+    AC_MSG_RESULT([$with_clutter])
+    
+    AS_IF([test "$with_clutter" != "no"], [
+        WEBKITCLUTTER_API_MAJOR_VERSION=1
+        WEBKITCLUTTER_API_MINOR_VERSION=0
+        WEBKITCLUTTER_API_VERSION=1.0
+        WEBKITCLUTTER_PC_NAME=webkit-clutter
+    
+        # fixme: remove gail from dependencies
+        GAIL_PC_NAME=gail
+        GAIL_REQUIRED_VERSION=1.8
+      
+        WEBKIT_PLATFORM_API_MAJOR_VERSION=$WEBKITCLUTTER_API_MAJOR_VERSION
+    
+        AC_SUBST([WEBKITCLUTTER_API_MAJOR_VERSION])
+        AC_SUBST([WEBKITCLUTTER_API_MINOR_VERSION])
+        AC_SUBST([WEBKITCLUTTER_API_VERSION])
+        AC_SUBST([WEBKITCLUTTER_PC_NAME])
+    
+        with_target="x11"
+        WEBKIT_LIBRARY_NAME="webkit_clutter_${WEBKITCLUTTER_API_MAJOR_VERSION}_${WEBKITCLUTTER_API_MINOR_VERSION}"
+        WEBKIT_PLATFORM_DIR="clutter"
+        BACKEND_API_VERSION=1.0
+    ], [
+        AC_MSG_ERROR([either --with-gtk or --with-clutter must be specified])
+    ])
+])
+
 AM_CONDITIONAL([GTK_API_VERSION_2],[test "$GTK_API_VERSION" = "2.0"])
 
-# determine the GDK/GTK+ target
-AC_MSG_CHECKING([the target windowing system])
-AC_ARG_WITH(target,
-            AC_HELP_STRING([--with-target=@<:@x11/win32/quartz/directfb@:>@],
-                           [Select webkit target [default=x11]]),
-            [],[with_target="x11"])
-
-case "$with_target" in
-     x11|win32|quartz|directfb) ;;
-     *) AC_MSG_ERROR([Invalid target: must be x11, quartz, win32, or directfb.]) ;;
-esac
-
-AC_MSG_RESULT([$with_target])
+AC_SUBST([WEBKIT_PLATFORM_API_MAJOR_VERSION])
+AC_SUBST([WEBKIT_LIBRARY_NAME])
+AC_SUBST([WEBKIT_PLATFORM_DIR])
 
 AC_MSG_CHECKING([for Hildon UI extensions])
 AC_ARG_WITH(hildon,
@@ -256,6 +309,8 @@ LIBXML_REQUIRED_VERSION=2.6
 # minimum GTK+ base dependencies
 PANGO_REQUIRED_VERSION=1.12
 
+CLUTTER_REQUIRED_VERSION=1.4
+
 # optional modules
 LIBXSLT_REQUIRED_VERSION=1.1.7
 SQLITE_REQUIRED_VERSION=3.0
@@ -281,7 +336,7 @@ if test "$have_gsettings" = "yes"; then
    GLIB_GSETTINGS
 fi
 
-GETTEXT_PACKAGE=$PACKAGE-$GTK_API_VERSION
+GETTEXT_PACKAGE=$PACKAGE-$BACKEND_API_VERSION
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",
                    [The gettext catalog name])
@@ -311,7 +366,9 @@ if test "$with_target" = "directfb"; then
    AC_DEFINE([WTF_PLATFORM_DIRECTFB],[1],[Define if target is DirectFB])
 else
    PKG_CHECK_MODULES(CAIRO, cairo >= $CAIRO_REQUIRED_VERSION)
-   PKG_CHECK_MODULES(GTK, gtk+-$GTK_API_VERSION >= $GTK_REQUIRED_VERSION)
+   if test "$with_gtk" != "no"; then
+      PKG_CHECK_MODULES(GTK, gtk+-$GTK_API_VERSION >= $GTK_REQUIRED_VERSION)
+   fi
 
    if test "$with_target" = "x11" && test "$os_win32" = "no"; then
       # check for XT
@@ -334,10 +391,22 @@ else
       AC_DEFINE([WTF_PLATFORM_X11],[1],[Define if target is X11])
    fi
 fi
+
+#if test "$with_gtk" != "no"; then
+
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
+
+#fi
+
 AC_SUBST(CAIRO_CFLAGS)
 AC_SUBST(CAIRO_LIBS)
+
+if test "$with_clutter" = "yes"; then
+    PKG_CHECK_MODULES(CLUTTER, clutter-1.0 >= $CLUTTER_REQUIRED_VERSION)
+    AC_SUBST(CLUTTER_CFLAGS)
+    AC_SUBST(CLUTTER_LIBS)
+fi
 
 # check whether to build with debugging enabled
 AC_MSG_CHECKING([whether to do a debug build])
@@ -886,6 +955,9 @@ fi
 
 GTK_DOC_CHECK([1.10])
 
+AM_CONDITIONAL([USE_GTK], [test "$with_gtk" != "no"])
+AM_CONDITIONAL([USE_CLUTTER], [test "$with_clutter" != "no"])
+
 # OS conditionals
 AM_CONDITIONAL([OS_WIN32],[test "$os_win32" = "yes"])
 AM_CONDITIONAL([OS_UNIX],[test "$os_win32" = "no"])
@@ -962,22 +1034,39 @@ AM_CONDITIONAL([ENABLE_OPCODE_STATS],[test "$enable_opcode_stats" = "yes"])
 # Gtk conditionals
 AM_CONDITIONAL([ENABLE_INTROSPECTION],[test "$enable_introspection" = "yes"])
 
+AC_CONFIG_FILES([GNUmakefile])
 
-AC_CONFIG_FILES([
-GNUmakefile
-WebKit/gtk/webkit/webkitversion.h
-WebKit/gtk/docs/GNUmakefile
-WebKit/gtk/docs/version.xml
-]
-)
+AS_IF([test "$with_gtk" != "no"], [
+    AC_CONFIG_FILES([
+    WebKit/gtk/webkit/webkitversion.h
+    WebKit/gtk/docs/GNUmakefile
+    WebKit/gtk/docs/version.xml
+    ]
+    )
+    
+    AC_CONFIG_FILES([
+    WebKit/gtk/${WEBKITGTK_PC_NAME}-${WEBKITGTK_API_VERSION}.pc:WebKit/gtk/webkit.pc.in
+    WebKit/gtk/JSCore-${WEBKITGTK_API_VERSION}.gir:WebKit/gtk/JSCore.gir.in
+    WebKit/gtk/org.webkitgtk-${WEBKITGTK_API_VERSION}.gschema.xml:WebKit/gtk/org.webkitgtk.gschema.xml.in
+    ]
+    ,[WEBKITGTK_API_VERSION=$WEBKITGTK_API_VERSION,WEBKITGTK_PC_NAME=$WEBKITGTK_PC_NAME]
+    )
+])
 
-AC_CONFIG_FILES([
-WebKit/gtk/${WEBKITGTK_PC_NAME}-${WEBKITGTK_API_VERSION}.pc:WebKit/gtk/webkit.pc.in
-WebKit/gtk/JSCore-${WEBKITGTK_API_VERSION}.gir:WebKit/gtk/JSCore.gir.in
-WebKit/gtk/org.webkitgtk-${WEBKITGTK_API_VERSION}.gschema.xml:WebKit/gtk/org.webkitgtk.gschema.xml.in
-]
-,[WEBKITGTK_API_VERSION=$WEBKITGTK_API_VERSION,WEBKITGTK_PC_NAME=$WEBKITGTK_PC_NAME]
-)
+AS_IF([test "$with_clutter" != "no"], [    
+    AC_CONFIG_FILES([
+    WebKit/clutter/webkit/webkitversion.h
+    ]
+    )
+    
+    AC_CONFIG_FILES([
+    WebKit/clutter/${WEBKITCLUTTER_PC_NAME}-${WEBKITCLUTTER_API_VERSION}.pc:WebKit/clutter/webkit.pc.in
+    WebKit/clutter/JSCore-${WEBKITCLUTTER_API_VERSION}.gir:WebKit/clutter/JSCore.gir.in
+    WebKit/clutter/org.webkitgtk-${WEBKITCLUTTER_API_VERSION}.gschema.xml:WebKit/clutter/org.webkit-clutter.gschema.xml.in
+    ]
+    ,[WEBKITCLUTTER_API_VERSION=$WEBKITCLUTTER_API_VERSION,WEBKITCLUTTER_PC_NAME=$WEBKITCLUTTER_PC_NAME]
+    )
+])
 
 AC_OUTPUT
 
@@ -985,6 +1074,8 @@ echo "
 WebKit was configured with the following options:
 
 Build configuration:
+ Using GTK                                                : $with_gtk
+ Using clutter                                            : $with_clutter
  Enable debugging (slow)                                  : $enable_debug
  Enable GCC build optimization                            : $enable_optimizations
  Code coverage support                                    : $enable_coverage
@@ -1028,12 +1119,16 @@ Features:
  XHTML-MP support                                         : $enable_xhtmlmp
  XPATH support                                            : $enable_xpath
  XSLT support                                             : $enable_xslt
-GTK+ configuration:
- GTK+ version                                             : $with_gtk
- GDK target                                               : $with_target
- Hildon UI extensions                                     : $with_hildon
- Introspection support                                    : $enable_introspection
 "
+if test "$with_gtk" != "no"; then
+    echo "
+    GTK+ configuration:
+     GTK+ version                                             : $with_gtk
+     GDK target                                               : $with_target
+     Hildon UI extensions                                     : $with_hildon
+     Introspection support                                    : $enable_introspection
+    "
+fi
 if test "$with_unicode_backend" = "glib"; then
    echo "     >> WARNING: the glib-based unicode backend is slow and incomplete <<"
    echo

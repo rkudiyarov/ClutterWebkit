@@ -392,7 +392,7 @@ private:
         Point mousePosForPlugin(MouseEvent* event = 0) const;
 #endif
 
-#if defined(XP_UNIX) && ENABLE(NETSCAPE_PLUGIN_API)
+#if defined(XP_UNIX) && ENABLE(NETSCAPE_PLUGIN_API) && !defined(CLUTTER)
         bool m_hasPendingGeometryChange;
         Pixmap m_drawable;
         Visual* m_visual;

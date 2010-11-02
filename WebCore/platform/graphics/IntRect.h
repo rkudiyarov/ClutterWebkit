@@ -54,6 +54,8 @@ typedef struct _GdkRectangle GdkRectangle;
 typedef struct _cairo_rectangle_int cairo_rectangle_int_t;
 typedef cairo_rectangle_int_t GdkRectangle;
 #endif
+#elif PLATFORM(CLUTTER)
+typedef struct _WebkitActorRectangle WebkitActorRectangle;
 #elif PLATFORM(HAIKU)
 class BRect;
 #elif PLATFORM(EFL)
@@ -157,6 +159,9 @@ public:
 #elif PLATFORM(GTK)
     IntRect(const GdkRectangle&);
     operator GdkRectangle() const;
+#elif PLATFORM(CLUTTER)
+    IntRect(const WebkitActorRectangle&);
+    operator WebkitActorRectangle() const;
 #elif PLATFORM(HAIKU)
     explicit IntRect(const BRect&);
     operator BRect() const;

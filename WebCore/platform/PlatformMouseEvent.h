@@ -33,6 +33,11 @@ typedef struct _GdkEventButton GdkEventButton;
 typedef struct _GdkEventMotion GdkEventMotion;
 #endif
 
+#if PLATFORM(CLUTTER)
+typedef struct _ClutterMotionEvent ClutterMotionEvent;
+typedef struct _ClutterButtonEvent ClutterButtonEvent;
+#endif
+
 #if PLATFORM(EFL)
 typedef struct _Evas_Event_Mouse_Down Evas_Event_Mouse_Down;
 typedef struct _Evas_Event_Mouse_Up Evas_Event_Mouse_Up;
@@ -124,6 +129,12 @@ namespace WebCore {
 #if PLATFORM(GTK) 
         PlatformMouseEvent(GdkEventButton*);
         PlatformMouseEvent(GdkEventMotion*);
+        void setClickCount(int count) { m_clickCount = count; }
+#endif
+
+#if PLATFORM(CLUTTER)
+        PlatformMouseEvent(ClutterButtonEvent*);
+        PlatformMouseEvent(ClutterMotionEvent*);
         void setClickCount(int count) { m_clickCount = count; }
 #endif
 

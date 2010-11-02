@@ -58,6 +58,8 @@ typedef struct _GdkPoint GdkPoint;
 class BPoint;
 #elif PLATFORM(EFL)
 typedef struct _Evas_Point Evas_Point;
+#elif PLATFORM(CLUTTER)
+typedef struct _WebkitActorPoint WebkitActorPoint;
 #endif
 
 #if PLATFORM(WX)
@@ -130,6 +132,9 @@ public:
 #elif PLATFORM(GTK)
     IntPoint(const GdkPoint&);
     operator GdkPoint() const;
+#elif PLATFORM(CLUTTER)
+    IntPoint(const WebkitActorPoint&);
+    operator WebkitActorPoint() const;
 #elif PLATFORM(HAIKU)
     explicit IntPoint(const BPoint&);
     operator BPoint() const;

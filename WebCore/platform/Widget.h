@@ -66,6 +66,11 @@ typedef struct _GtkContainer GtkContainer;
 typedef GtkWidget* PlatformWidget;
 #endif
 
+#if PLATFORM(CLUTTER)
+typedef struct _ClutterActor ClutterActor;
+typedef ClutterActor* PlatformWidget;
+#endif
+
 #if PLATFORM(QT)
 QT_BEGIN_NAMESPACE
 class QWidget;
@@ -294,7 +299,7 @@ inline void Widget::setPlatformWidget(PlatformWidget widget)
 
 #endif
 
-#if !PLATFORM(GTK)
+#if !PLATFORM(GTK) && !PLATFORM(CLUTTER)
 
 inline void Widget::releasePlatformWidget()
 {

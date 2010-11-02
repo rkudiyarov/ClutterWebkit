@@ -47,7 +47,7 @@
 #include <pthread.h>
 #elif PLATFORM(QT)
 #include <QThreadStorage>
-#elif PLATFORM(GTK)
+#elif PLATFORM(GTK) || PLATFORM(CLUTTER)
 #include <glib.h>
 #elif OS(WINDOWS)
 #include <windows.h>
@@ -55,7 +55,7 @@
 
 namespace WTF {
 
-#if !USE(PTHREADS) && !PLATFORM(QT) && !PLATFORM(GTK) && OS(WINDOWS)
+#if !USE(PTHREADS) && !PLATFORM(QT) && !PLATFORM(GTK) && !PLATFORM(CLUTTER) && OS(WINDOWS)
 // ThreadSpecificThreadExit should be called each time when a thread is detached.
 // This is done automatically for threads created with WTF::createThread.
 void ThreadSpecificThreadExit();
@@ -69,7 +69,7 @@ public:
     T& operator*();
 
 private:
-#if !USE(PTHREADS) && !PLATFORM(QT) && !PLATFORM(GTK) && OS(WINDOWS)
+#if !USE(PTHREADS) && !PLATFORM(QT) && !PLATFORM(GTK) && !PLATFORM(CLUTTER) && OS(WINDOWS)
     friend void ThreadSpecificThreadExit();
 #endif
 
@@ -83,7 +83,7 @@ private:
     void set(T*);
     void static destroy(void* ptr);
 
-#if USE(PTHREADS) || PLATFORM(QT) || PLATFORM(GTK) || OS(WINDOWS)
+#if USE(PTHREADS) || PLATFORM(QT) || PLATFORM(GTK) || PLATFORM(CLUTTER) || OS(WINDOWS)
     struct Data : Noncopyable {
         Data(T* value, ThreadSpecific<T>* owner) : value(value), owner(owner) {}
 #if PLATFORM(QT)
@@ -92,7 +92,7 @@ private:
 
         T* value;
         ThreadSpecific<T>* owner;
-#if !USE(PTHREADS) && !PLATFORM(QT) && !PLATFORM(GTK)
+#if !USE(PTHREADS) && !PLATFORM(QT) && !PLATFORM(GTK) && !PLATFORM(CLUTTER)
         void (*destructor)(void*);
 #endif
     };
@@ -105,7 +105,7 @@ private:
     pthread_key_t m_key;
 #elif PLATFORM(QT)
     QThreadStorage<Data*> m_key;
-#elif PLATFORM(GTK)
+#elif PLATFORM(GTK) || PLATFORM(CLUTTER)
     GStaticPrivate m_key;
 #elif OS(WINDOWS)
     int m_index;
@@ -178,7 +178,7 @@ inline void ThreadSpecific<T>::set(T* ptr)
     m_key.setLocalData(data);
 }
 
-#elif PLATFORM(GTK)
+#elif PLATFORM(GTK) || PLATFORM(CLUTTER)
 
 template<typename T>
 inline ThreadSpecific<T>::ThreadSpecific()
@@ -268,7 +268,7 @@ inline void ThreadSpecific<T>::destroy(void* ptr)
     // We want get() to keep working while data destructor works, because it can be called indirectly by the destructor.
     // Some pthreads implementations zero out the pointer before calling destroy(), so we temporarily reset it.
     pthread_setspecific(data->owner->m_key, ptr);
-#elif PLATFORM(GTK)
+#elif PLATFORM(GTK) || PLATFORM(CLUTTER)
     // See comment as above
     g_static_private_set(&data->owner->m_key, data, 0);
 #endif
@@ -284,7 +284,7 @@ inline void ThreadSpecific<T>::destroy(void* ptr)
     pthread_setspecific(data->owner->m_key, 0);
 #elif PLATFORM(QT)
     // Do nothing here
-#elif PLATFORM(GTK)
+#elif PLATFORM(GTK) || PLATFORM(CLUTTER)
     g_static_private_set(&data->owner->m_key, 0, 0);
 #elif OS(WINDOWS)
     TlsSetValue(tlsKeys()[data->owner->m_index], 0);

@@ -65,6 +65,7 @@ my %qtFeatureDefaults;
 my $isGtk;
 my $isWx;
 my $isEfl;
+my $isClutter;
 my @wxArgs;
 my $isChromium;
 my $isInspectorFrontend;
@@ -275,6 +276,7 @@ sub argumentsForConfiguration()
     push(@args, '--qt') if isQt();
     push(@args, '--symbian') if isSymbian();
     push(@args, '--gtk') if isGtk();
+    push(@args, '--clutter') if isClutter();
     push(@args, '--efl') if isEfl();
     push(@args, '--wx') if isWx();
     push(@args, '--chromium') if isChromium();
@@ -305,7 +307,7 @@ sub determineConfigurationProductDir
         # autotool builds (non build-webkit). In this case and if
         # WEBKITOUTPUTDIR exist, use that as our configuration dir. This will
         # allows us to run run-webkit-tests without using build-webkit.
-        if ($ENV{"WEBKITOUTPUTDIR"} && (isGtk() || isEfl())) {
+        if ($ENV{"WEBKITOUTPUTDIR"} && (isGtk() || isEfl() || isClutter())) {
             $configurationProductDir = "$baseProductDir";
         } else {
             $configurationProductDir = "$baseProductDir/$configuration";
@@ -356,7 +358,7 @@ sub jscProductDir
     my $productDir = productDir();
     $productDir .= "/JavaScriptCore" if isQt();
     $productDir .= "/$configuration" if (isQt() && isWindows());
-    $productDir .= "/Programs" if (isGtk() || isEfl());
+    $productDir .= "/Programs" if (isGtk() || isEfl() || isClutter());
 
     return $productDir;
 }
@@ -604,6 +606,9 @@ sub builtDylibPathForName
         }
         return $libraryDir . "libwebkitgtk-1.0.so";
     }
+    if (isClutter()) {
+        return "$configurationProductDir/$libraryName/../.libs/libclutterwebkit.so"
+    }
     if (isEfl()) {
         return "$configurationProductDir/$libraryName/../.libs/libewebkit.so";
     }
@@ -778,6 +783,18 @@ sub getWxArgs()
     return @wxArgs;
 }
 
+sub isClutter()
+{
+    determineIsClutter();
+    return $isClutter;
+}
+
+sub determineIsClutter()
+{
+    return if defined($isClutter);
+    $isClutter = checkForArgumentAndRemoveFromARGV("--clutter")
+}
+
 # Determine if this is debian, ubuntu, linspire, or something similar.
 sub isDebianBased()
 {
@@ -863,7 +880,7 @@ sub isLinux()
 
 sub isAppleWebKit()
 {
-    return !(isQt() or isGtk() or isWx() or isChromium() or isEfl());
+    return !(isQt() or isGtk() or isWx() or isChromium() or isEfl() or isClutter());
 }
 
 sub isAppleMacWebKit()
@@ -950,7 +967,7 @@ sub relativeScriptsDir()
 sub launcherPath()
 {
     my $relativeScriptsPath = relativeScriptsDir();
-    if (isGtk() || isQt() || isWx() || isEfl()) {
+    if (isGtk() || isQt() || isWx() || isEfl() || isClutter()) {
         return "$relativeScriptsPath/run-launcher";
     } elsif (isAppleWebKit()) {
         return "$relativeScriptsPath/run-safari";
@@ -961,6 +978,8 @@ sub launcherName()
 {
     if (isGtk()) {
         return "GtkLauncher";
+    } elsif (isClutter()){
+        return "ClutterLauncher";
     } elsif (isQt()) {
         return "QtTestBrowser";
     } elsif (isWx()) {
@@ -991,7 +1010,7 @@ sub checkRequiredSystemConfig
             print "http://developer.apple.com/tools/xcode\n";
             print "*************************************************************\n";
         }
-    } elsif (isGtk() or isQt() or isWx() or isEfl()) {
+    } elsif (isGtk() or isQt() or isWx() or isEfl() or isClutter()) {
         my @cmds = qw(flex bison gperf);
         my @missing = ();
         foreach my $cmd (@cmds) {
@@ -1161,6 +1180,9 @@ sub copyInspectorFrontendFiles
     } elsif (isEfl()) {
         my $prefix = $ENV{"WebKitInstallationPrefix"};
         $inspectorResourcesDirPath = (defined($prefix) ? $prefix : "/usr/share") . "/ewebkit/webinspector";
+    } elsif (isClutter()) {
+        my $prefix = $ENV{"WebKitInstallationPrefix"};
+        $inspectorResourcesDirPath = (defined($prefix) ? $prefix : "/usr/share") . "/clutter-webkit/webinspector";
     }
 
     if (! -d $inspectorResourcesDirPath) {
@@ -1388,6 +1410,7 @@ sub buildAutotoolsProject($@)
         close(AUTOTOOLS_ARGUMENTS);
 
         print "Calling configure in " . $dir . "\n\n";
+        print "Arguments: @buildArgs\n\n";
         print "Installation prefix directory: $prefix\n" if(defined($prefix));
 
         # Make the path relative since it will appear in all -I compiler flags.
@@ -1611,6 +1634,17 @@ sub buildGtkProject($$@)
 
     if ($project ne "WebKit") {
         die "The Gtk port builds JavaScriptCore, WebCore and WebKit in one shot! Only call it for 'WebKit'.\n";
+    }
+
+    return buildAutotoolsProject($clean, @buildArgs);
+}
+
+sub buildClutterProject($$@)
+{
+    my ($project, $clean, @buildArgs) = @_;
+
+    if ($project ne "WebKit") {
+        die "The Clutter port builds JavaScriptCore, WebCore and WebKit in one shot! Only call it for 'WebKit'.\n";
     }
 
     return buildAutotoolsProject($clean, @buildArgs);
