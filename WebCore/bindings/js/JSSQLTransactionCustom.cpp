@@ -27,9 +27,9 @@
  */
 
 #include "config.h"
-#include "JSSQLTransaction.h"
 
 #if ENABLE(DATABASE)
+#include "JSSQLTransaction.h"
 
 #include "DOMWindow.h"
 #include "ExceptionCode.h"

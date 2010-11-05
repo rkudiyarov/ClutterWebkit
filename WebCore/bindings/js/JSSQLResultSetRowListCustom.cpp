@@ -27,9 +27,9 @@
  */
 
 #include "config.h"
-#include "JSSQLResultSetRowList.h"
 
 #if ENABLE(DATABASE)
+#include "JSSQLResultSetRowList.h"
 
 #include "ExceptionCode.h"
 #include "SQLValue.h"

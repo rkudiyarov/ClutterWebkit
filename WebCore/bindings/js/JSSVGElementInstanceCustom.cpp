@@ -25,9 +25,10 @@
  */
 
 #include "config.h"
-#include "JSSVGElementInstance.h"
 
 #if ENABLE(SVG)
+#include "JSSVGElementInstance.h"
+
 #include "SVGElementInstance.h"
 
 namespace WebCore {

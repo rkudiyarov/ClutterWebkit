@@ -24,9 +24,9 @@
  */
 
 #include "config.h"
-#include "JSDOMApplicationCache.h"
 
 #if ENABLE(OFFLINE_WEB_APPLICATIONS)
+#include "JSDOMApplicationCache.h"
 
 #include "DOMApplicationCache.h"
 #include "DOMWindow.h"
