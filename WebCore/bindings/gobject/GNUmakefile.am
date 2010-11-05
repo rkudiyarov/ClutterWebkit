@@ -1,4 +1,4 @@
-webkitplatform_gdom_built_sources = \
+webkitplatform_gdom_built_sources := \
 	DerivedSources/webkit/WebKitDOMAttr.cpp \
 	DerivedSources/webkit/WebKitDOMAttrPrivate.h \
 	DerivedSources/webkit/WebKitDOMBarInfo.cpp \
@@ -245,304 +245,158 @@ webkitplatform_gdom_built_sources = \
 	DerivedSources/webkit/WebKitDOMXPathResult.cpp \
 	DerivedSources/webkit/WebKitDOMXPathResultPrivate.h
 
-if USE_GTK
-webkitgtk_gdom_built_sources += $(webkitplatform_gdom_built_sources)
-endif
-if USE_CLUTTER
-webkitclutter_gdom_built_sources += $(webkitplatform_gdom_built_sources)
-endif
+webkitplatform_built_h_api := \
+    DerivedSources/webkit/WebKitDOMCSSRule.h \
+    DerivedSources/webkit/WebKitDOMCSSRuleList.h \
+    DerivedSources/webkit/WebKitDOMCSSStyleDeclaration.h \
+    DerivedSources/webkit/WebKitDOMCSSStyleSheet.h \
+    DerivedSources/webkit/WebKitDOMCSSValue.h \
+    DerivedSources/webkit/WebKitDOMMediaList.h \
+    DerivedSources/webkit/WebKitDOMStyleMedia.h \
+    DerivedSources/webkit/WebKitDOMStyleSheet.h \
+    DerivedSources/webkit/WebKitDOMStyleSheetList.h \
+    DerivedSources/webkit/WebKitDOMAttr.h \
+    DerivedSources/webkit/WebKitDOMCDATASection.h \
+    DerivedSources/webkit/WebKitDOMCharacterData.h \
+    DerivedSources/webkit/WebKitDOMComment.h \
+    DerivedSources/webkit/WebKitDOMDocument.h \
+    DerivedSources/webkit/WebKitDOMDocumentFragment.h \
+    DerivedSources/webkit/WebKitDOMDocumentType.h \
+    DerivedSources/webkit/WebKitDOMDOMImplementation.h \
+    DerivedSources/webkit/WebKitDOMDOMStringList.h \
+    DerivedSources/webkit/WebKitDOMDOMStringMap.h \
+    DerivedSources/webkit/WebKitDOMDOMTokenList.h \
+    DerivedSources/webkit/WebKitDOMElement.h \
+    DerivedSources/webkit/WebKitDOMEntityReference.h \
+    DerivedSources/webkit/WebKitDOMEvent.h \
+    DerivedSources/webkit/WebKitDOMMessagePort.h \
+    DerivedSources/webkit/WebKitDOMMouseEvent.h \
+    DerivedSources/webkit/WebKitDOMNamedNodeMap.h \
+    DerivedSources/webkit/WebKitDOMNode.h \
+    DerivedSources/webkit/WebKitDOMNodeFilter.h \
+    DerivedSources/webkit/WebKitDOMNodeIterator.h \
+    DerivedSources/webkit/WebKitDOMNodeList.h \
+    DerivedSources/webkit/WebKitDOMProcessingInstruction.h \
+    DerivedSources/webkit/WebKitDOMRange.h \
+    DerivedSources/webkit/WebKitDOMText.h \
+    DerivedSources/webkit/WebKitDOMTreeWalker.h \
+    DerivedSources/webkit/WebKitDOMUIEvent.h \
+    DerivedSources/webkit/WebKitDOMBlob.h \
+    DerivedSources/webkit/WebKitDOMFile.h \
+    DerivedSources/webkit/WebKitDOMFileList.h \
+    DerivedSources/webkit/WebKitDOMHTMLAnchorElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLAppletElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLAreaElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLBaseElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLBaseFontElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLBlockquoteElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLBodyElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLBRElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLButtonElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLCanvasElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLCollection.h \
+    DerivedSources/webkit/WebKitDOMHTMLDirectoryElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLDivElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLDListElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLDocument.h \
+    DerivedSources/webkit/WebKitDOMHTMLElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLEmbedElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLFieldSetElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLFontElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLFormElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLFrameElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLFrameSetElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLHeadElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLHeadingElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLHRElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLHtmlElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLIFrameElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLImageElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLInputElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLIsIndexElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLLabelElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLLegendElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLLIElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLLinkElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLMapElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLMarqueeElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLMediaElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLMenuElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLMetaElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLModElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLObjectElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLOListElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLOptGroupElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLOptionElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLOptionsCollection.h \
+    DerivedSources/webkit/WebKitDOMHTMLParagraphElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLParamElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLPreElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLQuoteElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLScriptElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLSelectElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLStyleElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLTableElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLTableCaptionElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLTableColElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLTableSectionElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLTableCellElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLTextAreaElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLTitleElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLTableRowElement.h \
+    DerivedSources/webkit/WebKitDOMHTMLUListElement.h \
+    DerivedSources/webkit/WebKitDOMMediaError.h \
+    DerivedSources/webkit/WebKitDOMTimeRanges.h \
+    DerivedSources/webkit/WebKitDOMValidityState.h \
+    DerivedSources/webkit/WebKitDOMDOMApplicationCache.h \
+    DerivedSources/webkit/WebKitDOMBarInfo.h \
+    DerivedSources/webkit/WebKitDOMConsole.h \
+    DerivedSources/webkit/WebKitDOMDOMWindow.h \
+    DerivedSources/webkit/WebKitDOMDOMSelection.h \
+    DerivedSources/webkit/WebKitDOMEventTarget.h \
+    DerivedSources/webkit/WebKitDOMHistory.h \
+    DerivedSources/webkit/WebKitDOMLocation.h \
+    DerivedSources/webkit/WebKitDOMMemoryInfo.h \
+    DerivedSources/webkit/WebKitDOMObject.h \
+    DerivedSources/webkit/WebKitDOMNavigator.h \
+    DerivedSources/webkit/WebKitDOMScreen.h \
+    DerivedSources/webkit/WebKitDOMWebKitPoint.h \
+    DerivedSources/webkit/WebKitDOMDOMMimeType.h \
+    DerivedSources/webkit/WebKitDOMDOMMimeTypeArray.h \
+    DerivedSources/webkit/WebKitDOMDOMPlugin.h \
+    DerivedSources/webkit/WebKitDOMDOMPluginArray.h \
+    DerivedSources/webkit/WebKitDOMDatabase.h \
+    DerivedSources/webkit/WebKitDOMStorage.h \
+    DerivedSources/webkit/WebKitDOMXPathExpression.h \
+    DerivedSources/webkit/WebKitDOMXPathNSResolver.h \
+    DerivedSources/webkit/WebKitDOMXPathResult.h \
+    DerivedSources/webkit/webkitdom.h \
+    DerivedSources/webkit/webkitdomdefines.h
 
-if USE_GTK
-webkitgtk_built_h_api += \
-	DerivedSources/webkit/WebKitDOMCSSRule.h \
-	DerivedSources/webkit/WebKitDOMCSSRuleList.h \
-	DerivedSources/webkit/WebKitDOMCSSStyleDeclaration.h \
-	DerivedSources/webkit/WebKitDOMCSSStyleSheet.h \
-	DerivedSources/webkit/WebKitDOMCSSValue.h \
-	DerivedSources/webkit/WebKitDOMMediaList.h \
-	DerivedSources/webkit/WebKitDOMStyleMedia.h \
-	DerivedSources/webkit/WebKitDOMStyleSheet.h \
-	DerivedSources/webkit/WebKitDOMStyleSheetList.h \
-	DerivedSources/webkit/WebKitDOMAttr.h \
-	DerivedSources/webkit/WebKitDOMCDATASection.h \
-	DerivedSources/webkit/WebKitDOMCharacterData.h \
-	DerivedSources/webkit/WebKitDOMComment.h \
-	DerivedSources/webkit/WebKitDOMDocument.h \
-	DerivedSources/webkit/WebKitDOMDocumentFragment.h \
-	DerivedSources/webkit/WebKitDOMDocumentType.h \
-	DerivedSources/webkit/WebKitDOMDOMImplementation.h \
-	DerivedSources/webkit/WebKitDOMDOMStringList.h \
-	DerivedSources/webkit/WebKitDOMDOMStringMap.h \
-	DerivedSources/webkit/WebKitDOMDOMTokenList.h \
-	DerivedSources/webkit/WebKitDOMElement.h \
-	DerivedSources/webkit/WebKitDOMEntityReference.h \
-	DerivedSources/webkit/WebKitDOMEvent.h \
-	DerivedSources/webkit/WebKitDOMMessagePort.h \
-	DerivedSources/webkit/WebKitDOMMouseEvent.h \
-	DerivedSources/webkit/WebKitDOMNamedNodeMap.h \
-	DerivedSources/webkit/WebKitDOMNode.h \
-	DerivedSources/webkit/WebKitDOMNodeFilter.h \
-	DerivedSources/webkit/WebKitDOMNodeIterator.h \
-	DerivedSources/webkit/WebKitDOMNodeList.h \
-	DerivedSources/webkit/WebKitDOMProcessingInstruction.h \
-	DerivedSources/webkit/WebKitDOMRange.h \
-	DerivedSources/webkit/WebKitDOMText.h \
-	DerivedSources/webkit/WebKitDOMTreeWalker.h \
-	DerivedSources/webkit/WebKitDOMUIEvent.h \
-	DerivedSources/webkit/WebKitDOMBlob.h \
-	DerivedSources/webkit/WebKitDOMFile.h \
-	DerivedSources/webkit/WebKitDOMFileList.h \
-	DerivedSources/webkit/WebKitDOMHTMLAnchorElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLAppletElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLAreaElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLBaseElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLBaseFontElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLBlockquoteElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLBodyElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLBRElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLButtonElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLCanvasElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLCollection.h \
-	DerivedSources/webkit/WebKitDOMHTMLDirectoryElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLDivElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLDListElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLDocument.h \
-	DerivedSources/webkit/WebKitDOMHTMLElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLEmbedElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLFieldSetElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLFontElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLFormElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLFrameElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLFrameSetElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLHeadElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLHeadingElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLHRElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLHtmlElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLIFrameElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLImageElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLInputElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLIsIndexElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLLabelElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLLegendElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLLIElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLLinkElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLMapElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLMarqueeElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLMediaElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLMenuElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLMetaElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLModElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLObjectElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLOListElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLOptGroupElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLOptionElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLOptionsCollection.h \
-	DerivedSources/webkit/WebKitDOMHTMLParagraphElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLParamElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLPreElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLQuoteElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLScriptElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLSelectElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLStyleElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableCaptionElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableColElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableSectionElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableCellElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTextAreaElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTitleElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableRowElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLUListElement.h \
-	DerivedSources/webkit/WebKitDOMMediaError.h \
-	DerivedSources/webkit/WebKitDOMTimeRanges.h \
-	DerivedSources/webkit/WebKitDOMValidityState.h \
-	DerivedSources/webkit/WebKitDOMDOMApplicationCache.h \
-	DerivedSources/webkit/WebKitDOMBarInfo.h \
-	DerivedSources/webkit/WebKitDOMConsole.h \
-	DerivedSources/webkit/WebKitDOMDOMWindow.h \
-	DerivedSources/webkit/WebKitDOMDOMSelection.h \
-	DerivedSources/webkit/WebKitDOMEventTarget.h \
-	DerivedSources/webkit/WebKitDOMHistory.h \
-	DerivedSources/webkit/WebKitDOMLocation.h \
-	DerivedSources/webkit/WebKitDOMMemoryInfo.h \
-	DerivedSources/webkit/WebKitDOMObject.h \
-	DerivedSources/webkit/WebKitDOMNavigator.h \
-	DerivedSources/webkit/WebKitDOMScreen.h \
-	DerivedSources/webkit/WebKitDOMWebKitPoint.h \
-	DerivedSources/webkit/WebKitDOMDOMMimeType.h \
-	DerivedSources/webkit/WebKitDOMDOMMimeTypeArray.h \
-	DerivedSources/webkit/WebKitDOMDOMPlugin.h \
-	DerivedSources/webkit/WebKitDOMDOMPluginArray.h \
-	DerivedSources/webkit/WebKitDOMDatabase.h \
-	DerivedSources/webkit/WebKitDOMStorage.h \
-	DerivedSources/webkit/WebKitDOMXPathExpression.h \
-	DerivedSources/webkit/WebKitDOMXPathNSResolver.h \
-	DerivedSources/webkit/WebKitDOMXPathResult.h \
-	DerivedSources/webkit/webkitdom.h \
-	DerivedSources/webkit/webkitdomdefines.h
-endif
-if USE_CLUTTER
-webkitclutter_built_h_api += \
-	DerivedSources/webkit/WebKitDOMCSSRule.h \
-	DerivedSources/webkit/WebKitDOMCSSRuleList.h \
-	DerivedSources/webkit/WebKitDOMCSSStyleDeclaration.h \
-	DerivedSources/webkit/WebKitDOMCSSStyleSheet.h \
-	DerivedSources/webkit/WebKitDOMCSSValue.h \
-	DerivedSources/webkit/WebKitDOMMediaList.h \
-	DerivedSources/webkit/WebKitDOMStyleMedia.h \
-	DerivedSources/webkit/WebKitDOMStyleSheet.h \
-	DerivedSources/webkit/WebKitDOMStyleSheetList.h \
-	DerivedSources/webkit/WebKitDOMAttr.h \
-	DerivedSources/webkit/WebKitDOMCDATASection.h \
-	DerivedSources/webkit/WebKitDOMCharacterData.h \
-	DerivedSources/webkit/WebKitDOMComment.h \
-	DerivedSources/webkit/WebKitDOMDocument.h \
-	DerivedSources/webkit/WebKitDOMDocumentFragment.h \
-	DerivedSources/webkit/WebKitDOMDocumentType.h \
-	DerivedSources/webkit/WebKitDOMDOMImplementation.h \
-	DerivedSources/webkit/WebKitDOMDOMStringList.h \
-	DerivedSources/webkit/WebKitDOMDOMStringMap.h \
-	DerivedSources/webkit/WebKitDOMDOMTokenList.h \
-	DerivedSources/webkit/WebKitDOMElement.h \
-	DerivedSources/webkit/WebKitDOMEntityReference.h \
-	DerivedSources/webkit/WebKitDOMEvent.h \
-	DerivedSources/webkit/WebKitDOMMessagePort.h \
-	DerivedSources/webkit/WebKitDOMMouseEvent.h \
-	DerivedSources/webkit/WebKitDOMNamedNodeMap.h \
-	DerivedSources/webkit/WebKitDOMNode.h \
-	DerivedSources/webkit/WebKitDOMNodeFilter.h \
-	DerivedSources/webkit/WebKitDOMNodeIterator.h \
-	DerivedSources/webkit/WebKitDOMNodeList.h \
-	DerivedSources/webkit/WebKitDOMProcessingInstruction.h \
-	DerivedSources/webkit/WebKitDOMRange.h \
-	DerivedSources/webkit/WebKitDOMText.h \
-	DerivedSources/webkit/WebKitDOMTreeWalker.h \
-	DerivedSources/webkit/WebKitDOMUIEvent.h \
-	DerivedSources/webkit/WebKitDOMBlob.h \
-	DerivedSources/webkit/WebKitDOMFile.h \
-	DerivedSources/webkit/WebKitDOMFileList.h \
-	DerivedSources/webkit/WebKitDOMHTMLAnchorElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLAppletElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLAreaElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLBaseElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLBaseFontElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLBlockquoteElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLBodyElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLBRElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLButtonElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLCanvasElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLCollection.h \
-	DerivedSources/webkit/WebKitDOMHTMLDirectoryElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLDivElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLDListElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLDocument.h \
-	DerivedSources/webkit/WebKitDOMHTMLElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLEmbedElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLFieldSetElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLFontElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLFormElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLFrameElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLFrameSetElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLHeadElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLHeadingElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLHRElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLHtmlElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLIFrameElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLImageElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLInputElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLIsIndexElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLLabelElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLLegendElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLLIElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLLinkElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLMapElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLMarqueeElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLMediaElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLMenuElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLMetaElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLModElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLObjectElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLOListElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLOptGroupElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLOptionElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLOptionsCollection.h \
-	DerivedSources/webkit/WebKitDOMHTMLParagraphElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLParamElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLPreElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLQuoteElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLScriptElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLSelectElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLStyleElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableCaptionElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableColElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableSectionElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableCellElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTextAreaElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTitleElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLTableRowElement.h \
-	DerivedSources/webkit/WebKitDOMHTMLUListElement.h \
-	DerivedSources/webkit/WebKitDOMMediaError.h \
-	DerivedSources/webkit/WebKitDOMTimeRanges.h \
-	DerivedSources/webkit/WebKitDOMValidityState.h \
-	DerivedSources/webkit/WebKitDOMDOMApplicationCache.h \
-	DerivedSources/webkit/WebKitDOMBarInfo.h \
-	DerivedSources/webkit/WebKitDOMConsole.h \
-	DerivedSources/webkit/WebKitDOMDOMWindow.h \
-	DerivedSources/webkit/WebKitDOMDOMSelection.h \
-	DerivedSources/webkit/WebKitDOMEventTarget.h \
-	DerivedSources/webkit/WebKitDOMHistory.h \
-	DerivedSources/webkit/WebKitDOMLocation.h \
-	DerivedSources/webkit/WebKitDOMMemoryInfo.h \
-	DerivedSources/webkit/WebKitDOMObject.h \
-	DerivedSources/webkit/WebKitDOMNavigator.h \
-	DerivedSources/webkit/WebKitDOMScreen.h \
-	DerivedSources/webkit/WebKitDOMWebKitPoint.h \
-	DerivedSources/webkit/WebKitDOMDOMMimeType.h \
-	DerivedSources/webkit/WebKitDOMDOMMimeTypeArray.h \
-	DerivedSources/webkit/WebKitDOMDOMPlugin.h \
-	DerivedSources/webkit/WebKitDOMDOMPluginArray.h \
-	DerivedSources/webkit/WebKitDOMDatabase.h \
-	DerivedSources/webkit/WebKitDOMStorage.h \
-	DerivedSources/webkit/WebKitDOMXPathExpression.h \
-	DerivedSources/webkit/WebKitDOMXPathNSResolver.h \
-	DerivedSources/webkit/WebKitDOMXPathResult.h \
-	DerivedSources/webkit/webkitdom.h \
-	DerivedSources/webkit/webkitdomdefines.h
-endif
 
 if ENABLE_GEOLOCATION
-if USE_GTK
-webkitgtk_built_h_api += \
-	$(top_builddir)/DerivedSources/webkit/WebKitDOMGeolocation.h
-webkitgtk_gdom_built_sources += \
-	DerivedSources/webkit/WebKitDOMGeolocation.cpp \
-	DerivedSources/webkit/WebKitDOMGeolocationPrivate.h
-endif
-if USE_CLUTTER
-webkitclutter_built_h_api += \
-	$(top_builddir)/DerivedSources/webkit/WebKitDOMGeolocation.h
-webkitclutter_gdom_built_sources += \
-	DerivedSources/webkit/WebKitDOMGeolocation.cpp \
-	DerivedSources/webkit/WebKitDOMGeolocationPrivate.h
-endif
+    webkitplatform_built_h_api += \
+    	$(top_builddir)/DerivedSources/webkit/WebKitDOMGeolocation.h
+    webkitplatform_gdom_built_sources += \
+    	DerivedSources/webkit/WebKitDOMGeolocation.cpp \
+    	DerivedSources/webkit/WebKitDOMGeolocationPrivate.h
 endif
 
 if ENABLE_VIDEO
-if USE_GTK
-    webkitgtk_built_h_api += \
+    webkitplatform_built_h_api += \
     	$(top_builddir)/DerivedSources/webkit/WebKitDOMHTMLAudioElement.h
-    webkitgtk_gdom_built_sources += \
+    webkitplatform_gdom_built_sources += \
     	DerivedSources/webkit/WebKitDOMHTMLAudioElement.cpp \
     	DerivedSources/webkit/WebKitDOMHTMLAudioElementPrivate.h
 endif
-if USE_CLUTTER
-    webkitclutter_built_h_api += \
-    	$(top_builddir)/DerivedSources/webkit/WebKitDOMHTMLAudioElement.h
-    webkitclutter_gdom_built_sources += \
-    	DerivedSources/webkit/WebKitDOMHTMLAudioElement.cpp \
-    	DerivedSources/webkit/WebKitDOMHTMLAudioElementPrivate.
+
+if USE_GTK
+    webkitgtk_gdom_built_sources += $(webkitplatform_gdom_built_sources)
+    webkitgtk_built_h_api += $(webkitplatform_built_h_api)
 endif
+if USE_CLUTTER
+    webkitclutter_gdom_built_sources += $(webkitplatform_gdom_built_sources)
+    webkitclutter_built_h_api += $(webkitplatform_built_h_api)
 endif
 
 gdom_class_list := $(subst WebKitDOM,, $(filter-out %Private, $(basename $(notdir $(webkitplatform_gdom_built_sources)))))
