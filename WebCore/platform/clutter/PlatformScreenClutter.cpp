@@ -34,6 +34,7 @@
 #include "HostWindow.h"
 #include "ScrollView.h"
 #include "Widget.h"
+#include "NotImplemented.h"
 
 namespace WebCore {
 

@@ -26,7 +26,7 @@
 #include "config.h"
 #include "EventHandler.h"
 
-//#include "ClipboardGtk.h"
+#include "ClipboardClutter.h"
 #include "FloatPoint.h"
 #include "FocusController.h"
 #include "Frame.h"

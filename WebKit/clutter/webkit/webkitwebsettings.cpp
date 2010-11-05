@@ -1038,7 +1038,7 @@ static void webkit_web_settings_set_property(GObject* object, guint prop_id, con
             }
             g_strfreev(langs);
         } else {
-            const char* language = pango_language_to_string(gtk_get_default_language());
+            const char* language = pango_language_to_string(pango_language_get_default());
             if (enchant_broker_dict_exists(broker, language)) {
                 dict = enchant_broker_request_dict(broker, language);
                 spellDictionaries = g_slist_append(spellDictionaries, dict);

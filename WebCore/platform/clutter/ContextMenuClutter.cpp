@@ -27,11 +27,11 @@ namespace WebCore {
 // TODO: ref-counting correctness checking.
 // See http://bugs.webkit.org/show_bug.cgi?id=16115
 
-static void menuItemActivated(GtkMenuItem* item, ContextMenuController* controller)
-{
-    ContextMenuItem contextItem(item);
-    controller->contextMenuItemSelected(&contextItem);
-}
+//static void menuItemActivated(GtkMenuItem* item, ContextMenuController* controller)
+//{
+//    ContextMenuItem contextItem(item);
+//    controller->contextMenuItemSelected(&contextItem);
+//}
 
 ContextMenu::ContextMenu(const HitTestResult& result)
     : m_hitTestResult(result)

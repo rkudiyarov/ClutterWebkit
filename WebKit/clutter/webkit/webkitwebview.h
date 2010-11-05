@@ -134,17 +134,19 @@ struct _WebKitWebViewClass {
     void                       (* cut_clipboard)          (WebKitWebView        *web_view);
     void                       (* copy_clipboard)         (WebKitWebView        *web_view);
     void                       (* paste_clipboard)        (WebKitWebView        *web_view);
+/*
 //    gboolean                   (* move_cursor)            (WebKitWebView        *web_view,
 //                                                           GtkMovementStep       step,
 //                                                           gint                  count);
-
+*/
     /*
      * internal
      */
-    void                       (* set_scroll_adjustments) (WebKitWebView        *web_view,
-                                                           GtkAdjustment        *hadjustment,
-                                                           GtkAdjustment        *vadjustment);
-
+/*
+//    void                       (* set_scroll_adjustments) (WebKitWebView        *web_view,
+//                                                           GtkAdjustment        *hadjustment,
+//                                                           GtkAdjustment        *vadjustment);
+*/
     void                       (* undo)                   (WebKitWebView        *web_view);
     void                       (* redo)                   (WebKitWebView        *web_view);
 
@@ -294,12 +296,13 @@ webkit_web_view_get_editable                    (WebKitWebView        *web_view)
 WEBKIT_API void
 webkit_web_view_set_editable                    (WebKitWebView        *web_view,
                                                  gboolean              flag);
-
+/*
 //WEBKIT_API GtkTargetList *
 //webkit_web_view_get_copy_target_list            (WebKitWebView        *web_view);
 
 //WEBKIT_API GtkTargetList *
 //webkit_web_view_get_paste_target_list           (WebKitWebView        *web_view);
+*/
 
 WEBKIT_API void
 webkit_web_view_set_settings                    (WebKitWebView        *web_view,
@@ -365,10 +368,12 @@ webkit_web_view_set_view_mode                   (WebKitWebView        *web_view,
 WEBKIT_API WebKitWebViewViewMode
 webkit_web_view_get_view_mode                   (WebKitWebView        *web_view);
 
+/*
 //WEBKIT_API void
 //webkit_web_view_move_cursor                     (WebKitWebView        * webView,
 //                                                 GtkMovementStep        step,
 //                                                 gint                   count);
+*/
 
 WEBKIT_API WebKitLoadStatus
 webkit_web_view_get_load_status                 (WebKitWebView        *web_view);
@@ -397,7 +402,7 @@ webkit_web_view_get_view_source_mode            (WebKitWebView        *web_view)
 
 WEBKIT_API WebKitHitTestResult*
 webkit_web_view_get_hit_test_result             (WebKitWebView        *webView,
-                                                 GdkEventButton       *event);
+                                                 ClutterButtonEvent   *event);
 
 WEBKIT_API G_CONST_RETURN gchar *
 webkit_web_view_get_icon_uri                    (WebKitWebView        *webView);

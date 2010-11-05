@@ -1038,7 +1038,7 @@ AtkObject* webkit_web_frame_get_focused_accessible_element(WebKitWebFrame* frame
 //     return webkit_accessible_get_focused_element(WEBKIT_ACCESSIBLE(wrapper));
 // #else
     return NULL;
-#endif
+//#endif
 }
 
 // GtkPolicyType webkit_web_frame_get_horizontal_scrollbar_policy(WebKitWebFrame* frame)

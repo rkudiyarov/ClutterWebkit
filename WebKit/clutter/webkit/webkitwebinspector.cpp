@@ -27,7 +27,7 @@
 #include <glib/gi18n-lib.h>
 #include "HitTestRequest.h"
 #include "HitTestResult.h"
-#include "InspectorClientGtk.h"
+#include "InspectorClientClutter.h"
 #include "IntPoint.h"
 #include "Page.h"
 #include "RenderLayer.h"

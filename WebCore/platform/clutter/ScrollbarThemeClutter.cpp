@@ -30,12 +30,13 @@
 #include "RenderThemeClutter.h"
 #include "ScrollView.h"
 #include "Scrollbar.h"
+#include "NotImplemented.h"
 
 
 namespace WebCore {
 
 static HashSet<Scrollbar*>* gScrollbars;
-static void gtkStyleSetCallback(ClutterWidget*, ClutterStyle*, ScrollbarThemeClutter*);
+//static void gtkStyleSetCallback(ClutterWidget*, ClutterStyle*, ScrollbarThemeClutter*);
 
 ScrollbarTheme* ScrollbarTheme::nativeTheme()
 {

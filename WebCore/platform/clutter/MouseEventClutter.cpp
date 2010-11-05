@@ -39,7 +39,7 @@ namespace WebCore {
 // Keep this in sync with the other platform event constructors
 PlatformMouseEvent::PlatformMouseEvent(ClutterButtonEvent* event)
 {
-    ClutterUnit ux, uy;
+    gfloat ux, uy;
 
     if (clutter_actor_transform_stage_point(event->source,
 					    event->x,
@@ -81,7 +81,7 @@ PlatformMouseEvent::PlatformMouseEvent(ClutterButtonEvent* event)
 
 PlatformMouseEvent::PlatformMouseEvent(ClutterMotionEvent* event)
 {
-    ClutterUnit ux, uy;
+    gfloat ux, uy;
 
     if (clutter_actor_transform_stage_point(event->source,
 					    event->x,

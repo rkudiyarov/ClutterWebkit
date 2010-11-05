@@ -21,8 +21,8 @@
 #include "webkitwebdatasource.h"
 
 #include "ArchiveResource.h"
-#include "DocumentLoaderGtk.h"
-#include "FrameLoaderClientGtk.h"
+#include "DocumentLoaderClutter.h"
+#include "FrameLoaderClientClutter.h"
 #include "FrameLoader.h"
 #include "KURL.h"
 #include "PlatformString.h"

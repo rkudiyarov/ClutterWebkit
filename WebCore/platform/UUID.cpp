@@ -74,7 +74,7 @@ String createCanonicalUUIDString()
 #elif OS(DARWIN)
     CFUUIDRef uuid = CFUUIDCreate(0);
     CFStringRef uuidStrRef = CFUUIDCreateString(0, uuid);
-    String uuidStr(uuidStrRef);
+    String uuidStr(CFStringGetCStringPtr(uuidStrRef, kCFStringEncodingISOLatin1));
     CFRelease(uuidStrRef);
     CFRelease(uuid);
     String canonicalUuidStr = uuidStr.lower(); // make it lower.

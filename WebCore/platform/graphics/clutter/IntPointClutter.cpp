@@ -24,7 +24,7 @@
 
 namespace WebCore {
 
-IntPoint::IntPoint(const WebKitActorPoint& p)
+IntPoint::IntPoint(const WebkitActorPoint& p)
     : m_x(p.x)
     , m_y(p.y)
 {

@@ -185,3 +185,36 @@ TestNetscapePlugin_libtestnetscapeplugin_la_LDFLAGS = \
 CLEANFILES += TestNetscapePlugin/libtestnetscapeplugin.la
 endif
 endif # if USE_GTK
+
+if USE_CLUTTER
+noinst_PROGRAMS += \
+	Programs/ClutterLauncher
+
+# GtkLauncher
+Programs_ClutterLauncher_CPPFLAGS = \
+	-I$(srcdir)/WebKit/clutter \
+	-I$(top_builddir)/WebKit/clutter \
+	-I$(top_builddir)/DerivedSources \
+	$(global_cppflags) \
+	$(javascriptcore_cppflags)
+
+Programs_ClutterLauncher_SOURCES = \
+	WebKitTools/ClutterLauncher/main.c
+
+Programs_ClutterLauncher_CFLAGS = \
+	-ansi \
+	-fno-strict-aliasing \
+	$(global_cflags) \
+	$(CLUTTER_CFLAGS) \
+	$(LIBSOUP_CFLAGS)
+
+Programs_ClutterLauncher_LDADD = \
+	libwebkit-clutter-@WEBKITCLUTTER_API_MAJOR_VERSION@.@WEBKITCLUTTER_API_MINOR_VERSION@.la \
+	$(CLUTTER_LIBS) \
+	$(GLIB_LIBS) \
+	$(WINMM_LIBS)
+
+Programs_ClutterLauncher_LDFLAGS = \
+	-no-fast-install \
+	-no-install
+endif

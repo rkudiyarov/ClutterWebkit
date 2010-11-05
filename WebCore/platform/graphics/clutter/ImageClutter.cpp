@@ -31,6 +31,8 @@
 #include "NotImplemented.h"
 #include <wtf/text/CString.h>
 #include <cairo.h>
+#include <glib.h>
+#include <glib/gstdio.h>
 
 #if PLATFORM(WIN)
 #include <mbstring.h>

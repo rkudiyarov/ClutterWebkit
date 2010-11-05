@@ -46,22 +46,24 @@ PopupMenuClutter::~PopupMenuClutter()
 
 void PopupMenuClutter::show(const IntRect& rect, FrameView* view, int index)
 {
-    Page* page = view->frame()->page();
-    PopupFactoryClient* factory = page->popupFactoryClient();
-
-    factory->createPopupMenu(client(), this, index);
+    // Page* page = view->frame()->page();
+    // PopupFactoryClient* factory = page->popupFactoryClient();
+    // 
+    // factory->createPopupMenu(client(), this, index);
+    notImplemented();
 }
 
 void PopupMenuClutter::hide()
 {
-    Page* page = client()->clientDocument()->page();
-
-    if (!page) {
-	return;
-    }
-
-    PopupFactoryClient* factory = page->popupFactoryClient();
-    factory->hidePopupMenu();
+    //     Page* page = client()->clientDocument()->page();
+    // 
+    //     if (!page) {
+    // return;
+    //     }
+    // 
+    //     PopupFactoryClient* factory = page->popupFactoryClient();
+    //     factory->hidePopupMenu();
+    notImplemented();
 }
 
 void PopupMenuClutter::updateFromElement()

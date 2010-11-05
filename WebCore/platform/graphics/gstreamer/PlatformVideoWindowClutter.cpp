@@ -1,9 +1,5 @@
 /*
- * Copyright (C) 2007 Luca Bruno <lethalman88@gmail.com>
- * Copyright (C) 2009 Holger Hans Peter Freyther
- * Copyright (C) 2010 Martin Robinson <mrobinson@webkit.org>
- * Copyright (C) 2010 Igalia S.L.
- * All rights reserved.
+ * Copyright (C) 2010 Igalia S.L
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,27 +15,23 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
- *
  */
 
-#ifndef PasteboardHelper_h
-#define PasteboardHelper_h
+#include "config.h"
+#include "PlatformVideoWindow.h"
+#if USE(GSTREAMER)
 
-/*
- * FIXME: this is for WebCore support and must be removed once
- * a better solution is found
- */
+#include "NotImplemented.h"
 
-#include "Frame.h"
+using namespace WebCore;
 
-namespace WebCore {
-
-class PasteboardHelper {
-public:
-    virtual ~PasteboardHelper() {}
-    enum PasteboardTargetType { TargetTypeText, TargetTypeMarkup, TargetTypeURIList, TargetTypeNetscapeURL, TargetTypeImage, TargetTypeUnknown };
-};
-
+PlatformVideoWindow::PlatformVideoWindow()
+{
+    notImplemented();
 }
 
-#endif // PasteboardHelper_h
+PlatformVideoWindow::~PlatformVideoWindow()
+{
+    notImplemented();
+}
+#endif // USE(GSTREAMER)

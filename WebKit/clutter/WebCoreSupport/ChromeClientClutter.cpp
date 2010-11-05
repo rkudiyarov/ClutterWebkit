@@ -322,7 +322,8 @@ void ChromeClient::invalidateWindow(const IntRect&, bool)
 
 void ChromeClient::invalidateContentsAndWindow(const IntRect& updateRect, bool immediate)
 {
-    webkit_actor_queue_expose(WEBKIT_ACTOR(m_webView), updateRect);
+    WebkitActorRectangle uRect = updateRect;
+    webkit_actor_queue_expose(WEBKIT_ACTOR(m_webView), &uRect);
 }
 
 void ChromeClient::invalidateContentsForSlowScroll(const IntRect& updateRect, bool immediate)
@@ -339,7 +340,7 @@ static IntPoint actorScreenPosition(ClutterActor* actor)
 {
     gfloat actorX = 0.0, actorY = 0.0;
     clutter_actor_get_transformed_position(actor, &actorX, &actorY);
-    return IntPoint((int)actorX, (int)actorY));
+    return IntPoint((int)actorX, (int)actorY);
 }
 
 IntRect ChromeClient::windowToScreen(const IntRect& rect) const

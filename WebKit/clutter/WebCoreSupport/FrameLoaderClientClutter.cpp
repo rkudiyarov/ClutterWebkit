@@ -363,7 +363,7 @@ void FrameLoaderClient::postProgressFinishedNotification()
     // We can get a stopLoad() from dispose when the object is being
     // destroyed, don't emit the signal in that case.
     if (!privateData->disposing)
-        g_signal_emit_by_name(webView, "load-finished", m_frame);
+        g_signal_emit_by_name(webView, "webkit-load-finished", m_frame);
 }
 
 void FrameLoaderClient::frameLoaderDestroyed()

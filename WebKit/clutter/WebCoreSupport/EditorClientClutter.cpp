@@ -156,7 +156,7 @@ void EditorClient::respondToChangedContents()
 
 void EditorClient::respondToChangedSelection()
 {
-    notImplemented()
+    notImplemented();
 }
 
 void EditorClient::didEndEditing()

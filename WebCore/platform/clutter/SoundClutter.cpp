@@ -20,8 +20,7 @@
 #include "config.h"
 
 #include "Sound.h"
-
-#include <gdk/gdk.h>
+#include "NotImplemented.h"
 
 namespace WebCore {
 

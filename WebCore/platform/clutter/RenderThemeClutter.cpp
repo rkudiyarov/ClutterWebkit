@@ -29,7 +29,6 @@
 #include "GOwnPtr.h"
 #include "Gradient.h"
 #include "GraphicsContext.h"
-#include "GtkVersioning.h"
 #include "HTMLMediaElement.h"
 #include "HTMLNames.h"
 #include "MediaControlElements.h"
@@ -41,6 +40,8 @@
 #include "TimeRanges.h"
 #include "UserAgentStyleSheets.h"
 #include <wtf/text/CString.h>
+
+#include <clutter/clutter.h>
 
 #if ENABLE(PROGRESS_TAG)
 #include "RenderProgress.h"
@@ -74,8 +75,8 @@ PassRefPtr<RenderTheme> RenderTheme::themeForPage(Page* page)
     return rt;
 }
 
-RenderThemeClutter::RenderThemeGtk()
-    , m_panelColor(Color::white)
+RenderThemeClutter::RenderThemeClutter()
+    : m_panelColor(Color::white)
     , m_sliderColor(Color::white)
     , m_sliderThumbColor(Color::white)
     , m_mediaIconSize(16)
@@ -93,7 +94,7 @@ RenderThemeClutter::RenderThemeGtk()
     notImplemented();
 }
 
-RenderThemeClutter::~RenderThemeGtk()
+RenderThemeClutter::~RenderThemeClutter()
 {
     notImplemented();
 }
@@ -375,9 +376,9 @@ Color RenderThemeClutter::systemColor(int cssValueId) const
 {
     switch (cssValueId) {
     case CSSValueButtontext:
-        return Color(gtk_widget_get_style(gtkButton())->fg[GTK_STATE_NORMAL]);
+        return Color(0, 0, 0);
     case CSSValueCaptiontext:
-        return Color(gtk_widget_get_style(gtkEntry())->fg[GTK_STATE_NORMAL]);
+        return Color(0, 0, 0);
     default:
         return RenderTheme::systemColor(cssValueId);
     }

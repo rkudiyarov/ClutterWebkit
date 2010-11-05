@@ -37,10 +37,10 @@ using namespace WebCore;
 
 namespace WebKit {
 
-class PasteboardHelperGtk : public PasteboardHelper {
+class PasteboardHelperClutter : public PasteboardHelper {
 public:
-    PasteboardHelperGtk();
-    ~PasteboardHelperGtk();
+    PasteboardHelperClutter();
+    ~PasteboardHelperClutter();
     virtual guint getIdForTargetType(PasteboardTargetType);
 
 protected:
@@ -49,4 +49,4 @@ protected:
 
 }
 
-#endif // PasteboardHelperGtk_h
+#endif // PasteboardHelperClutter_h

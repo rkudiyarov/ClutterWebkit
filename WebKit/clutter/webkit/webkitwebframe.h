@@ -144,6 +144,7 @@ webkit_web_frame_find_frame         (WebKitWebFrame       *frame,
 WEBKIT_API JSGlobalContextRef
 webkit_web_frame_get_global_context (WebKitWebFrame       *frame);
 
+/*
 //WEBKIT_API GtkPrintOperationResult
 //webkit_web_frame_print_full         (WebKitWebFrame       *frame,
 //                                     GtkPrintOperation    *operation,
@@ -152,15 +153,18 @@ webkit_web_frame_get_global_context (WebKitWebFrame       *frame);
 //
 //WEBKIT_API void
 //webkit_web_frame_print              (WebKitWebFrame       *frame);
+*/
 
 WEBKIT_API WebKitLoadStatus
 webkit_web_frame_get_load_status    (WebKitWebFrame       *frame);
 
+/*
 //WEBKIT_API GtkPolicyType
 //webkit_web_frame_get_horizontal_scrollbar_policy (WebKitWebFrame        *frame);
 //
 //WEBKIT_API GtkPolicyType
 //webkit_web_frame_get_vertical_scrollbar_policy   (WebKitWebFrame        *frame);
+*/
 
 WEBKIT_API WebKitWebDataSource *
 webkit_web_frame_get_data_source             (WebKitWebFrame       *frame);

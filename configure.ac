@@ -1062,7 +1062,7 @@ AS_IF([test "$with_clutter" != "no"], [
     AC_CONFIG_FILES([
     WebKit/clutter/${WEBKITCLUTTER_PC_NAME}-${WEBKITCLUTTER_API_VERSION}.pc:WebKit/clutter/webkit.pc.in
     WebKit/clutter/JSCore-${WEBKITCLUTTER_API_VERSION}.gir:WebKit/clutter/JSCore.gir.in
-    WebKit/clutter/org.webkitgtk-${WEBKITCLUTTER_API_VERSION}.gschema.xml:WebKit/clutter/org.webkit-clutter.gschema.xml.in
+    WebKit/clutter/org.webkit-clutter-${WEBKITCLUTTER_API_VERSION}.gschema.xml:WebKit/clutter/org.webkit-clutter.gschema.xml.in
     ]
     ,[WEBKITCLUTTER_API_VERSION=$WEBKITCLUTTER_API_VERSION,WEBKITCLUTTER_PC_NAME=$WEBKITCLUTTER_PC_NAME]
     )

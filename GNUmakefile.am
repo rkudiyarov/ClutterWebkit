@@ -550,6 +550,7 @@ endif
 if USE_CLUTTER
 webkitclutter_static_h_api += \
 	$(srcdir)/WebKit/clutter/webkit/webkit.h \
+	$(srcdir)/WebKit/clutter/webkit/webkitactor.h \
 	$(srcdir)/WebKit/clutter/webkit/webkitdefines.h \
 	$(srcdir)/WebKit/clutter/webkit/webkitdownload.h \
 	$(srcdir)/WebKit/clutter/webkit/webkiterror.h \
@@ -590,23 +591,24 @@ webkitclutter_built_sources += \
 	WebKit/clutter/webkit/webkitenumtypes.h
 
 webkitclutter_sources += \
-	WebKit/clutter/WebCoreSupport/ChromeClientGtk.cpp \
-	WebKit/clutter/WebCoreSupport/ChromeClientGtk.h \
-	WebKit/clutter/WebCoreSupport/ContextMenuClientGtk.cpp \
-	WebKit/clutter/WebCoreSupport/ContextMenuClientGtk.h \
-	WebKit/clutter/WebCoreSupport/DocumentLoaderGtk.cpp \
-	WebKit/clutter/WebCoreSupport/DocumentLoaderGtk.h \
-	WebKit/clutter/WebCoreSupport/DragClientGtk.cpp \
-	WebKit/clutter/WebCoreSupport/DragClientGtk.h \
-	WebKit/clutter/WebCoreSupport/EditorClientGtk.cpp \
-	WebKit/clutter/WebCoreSupport/EditorClientGtk.h \
-	WebKit/clutter/WebCoreSupport/FrameLoaderClientGtk.cpp \
-	WebKit/clutter/WebCoreSupport/FrameLoaderClientGtk.h \
-	WebKit/clutter/WebCoreSupport/FrameNetworkingContextGtk.h \
-	WebKit/clutter/WebCoreSupport/InspectorClientGtk.cpp \
-	WebKit/clutter/WebCoreSupport/InspectorClientGtk.h \
-	WebKit/clutter/WebCoreSupport/PasteboardHelperGtk.cpp \
-	WebKit/clutter/WebCoreSupport/PasteboardHelperGtk.h \
+	WebKit/clutter/WebCoreSupport/ChromeClientClutter.cpp \
+	WebKit/clutter/WebCoreSupport/ChromeClientClutter.h \
+	WebKit/clutter/WebCoreSupport/ContextMenuClientClutter.cpp \
+	WebKit/clutter/WebCoreSupport/ContextMenuClientClutter.h \
+	WebKit/clutter/WebCoreSupport/DocumentLoaderClutter.cpp \
+	WebKit/clutter/WebCoreSupport/DocumentLoaderClutter.h \
+	WebKit/clutter/WebCoreSupport/DragClientClutter.cpp \
+	WebKit/clutter/WebCoreSupport/DragClientClutter.h \
+	WebKit/clutter/WebCoreSupport/EditorClientClutter.cpp \
+	WebKit/clutter/WebCoreSupport/EditorClientClutter.h \
+	WebKit/clutter/WebCoreSupport/FrameLoaderClientClutter.cpp \
+	WebKit/clutter/WebCoreSupport/FrameLoaderClientClutter.h \
+	WebKit/clutter/WebCoreSupport/FrameNetworkingContextClutter.h \
+	WebKit/clutter/WebCoreSupport/InspectorClientClutter.cpp \
+	WebKit/clutter/WebCoreSupport/InspectorClientClutter.h \
+	WebKit/clutter/WebCoreSupport/PasteboardHelperClutter.cpp \
+	WebKit/clutter/WebCoreSupport/PasteboardHelperClutter.h \
+	WebKit/clutter/webkit/webkitactor.cpp \
 	WebKit/clutter/webkit/webkitapplicationcache.cpp \
 	WebKit/clutter/webkit/webkitdownload.cpp \
 	WebKit/clutter/webkit/webkiterror.cpp \

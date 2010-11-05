@@ -37,7 +37,7 @@ namespace WebCore {
     // Created from the EventHandlerGtk to be used by the dom
     class ClipboardClutter : public Clipboard, public CachedResourceClient {
     public:
-        static PassRefPtr<ClipboardGtk> create(ClipboardAccessPolicy policy, ClipboardType clipboardType)
+        static PassRefPtr<ClipboardClutter> create(ClipboardAccessPolicy policy, ClipboardType clipboardType)
         {
             return adoptRef(new ClipboardClutter(policy, clipboardType));
         }

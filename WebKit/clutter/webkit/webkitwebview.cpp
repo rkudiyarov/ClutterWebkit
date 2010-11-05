@@ -45,7 +45,7 @@
 #include "BackForwardList.h"
 #include "Cache.h"
 #include "ChromeClientClutter.h"
-#include "ClipboardUtilitiesClutter.h"
+//#include "ClipboardUtilitiesClutter.h"
 #include "ContextMenuClientClutter.h"
 #include "ContextMenuController.h"
 #include "ContextMenu.h"
@@ -87,7 +87,8 @@
 #include "webkit/WebKitDOMDocumentPrivate.h"
 #include <wtf/text/CString.h>
 
-#include <gdk/gdkkeysyms.h>
+#include <stdio.h>
+//#include <gdk/gdkkeysyms.h>
 
 /**
  * SECTION:webkitwebview
@@ -262,11 +263,11 @@ static gboolean webkit_web_view_forward_context_menu_event(WebKitWebView* webVie
     if (!enableDefaultContextMenu)
         return FALSE;
 
-    GList* menu = G_LIST(coreMenu->platformDescription());
+    GList* menu = (GList*)(coreMenu->platformDescription());
     if (!menu)
         return FALSE;
 
-    g_signal_emit(webView, webkit_web_view_signals[POPULATE_POPUP], 0, menu);
+    //g_signal_emit(webView, webkit_web_view_signals[POPULATE_POPUP], 0, menu);
 
     GList* items = menu;
     bool empty = !g_list_nth(items, 0);
@@ -373,12 +374,12 @@ static void webkit_web_view_get_property(GObject* object, guint prop_id, GValue*
     case PROP_URI:
         g_value_set_string(value, webkit_web_view_get_uri(webView));
         break;
-    case PROP_COPY_TARGET_LIST:
-        g_value_set_boxed(value, webkit_web_view_get_copy_target_list(webView));
-        break;
-    case PROP_PASTE_TARGET_LIST:
-        g_value_set_boxed(value, webkit_web_view_get_paste_target_list(webView));
-        break;
+    // case PROP_COPY_TARGET_LIST:
+    //     g_value_set_boxed(value, webkit_web_view_get_copy_target_list(webView));
+    //     break;
+    // case PROP_PASTE_TARGET_LIST:
+    //     g_value_set_boxed(value, webkit_web_view_get_paste_target_list(webView));
+    //     break;
     case PROP_EDITABLE:
         g_value_set_boolean(value, webkit_web_view_get_editable(webView));
         break;
@@ -521,11 +522,14 @@ webkit_web_view_expose(WebkitActor* actor, WebkitActorRectangle* rect)
     if ((rect->width == 0) || (rect->height == 0))
         return;
         
-    Frame* frame = core(webView)->mainFrame();
+//    Frame* frame = core(webView)->mainFrame();
+    cairo_t* cr;
     if (frame->contentRenderer() && frame->view()) {
+        printf("webkit_web_view_expose:\n");
+        
         frame->view()->updateLayoutAndStyleIfNeededRecursive();
 
-        cairo_t* cr = clutter_cairo_texture_create_region(CLUTTER_CAIRO_TEXTURE(actor),
+        cr = clutter_cairo_texture_create_region(CLUTTER_CAIRO_TEXTURE(actor),
             rect->x, rect->y,
             rect->width, rect->height);
         GraphicsContext ctx(cr);
@@ -535,12 +539,13 @@ webkit_web_view_expose(WebkitActor* actor, WebkitActorRectangle* rect)
         //GOwnPtr<GdkRectangle> rects;
         //gdk_region_get_rectangles(event->region, &rects.outPtr(), &rectCount);
         Vector<IntRect> paintRects;
-        paintRects.append(rect);
+        paintRects.append(IntRect(*rect));
         //for (int i = 0; i < rectCount; i++)
         //    paintRects.append(IntRect(rects.get()[i]));
 
-        paintWebView(frame, priv->transparent, ctx, rect, paintRects);
+        paintWebView(frame, priv->transparent, ctx, IntRect(*rect), paintRects);
     }
+    printf("Cairo context refcount: %d\n\n", cairo_get_reference_count(cr));
 }
 
 static gboolean webkit_web_view_key_press_event(ClutterActor* actor, ClutterKeyEvent* event)
@@ -630,7 +635,7 @@ static gboolean webkit_web_view_motion_event(ClutterActor* actor, ClutterMotionE
     return frame->eventHandler()->mouseMoved(PlatformMouseEvent(event));
 }
 
-static gboolean webkit_web_view_scroll_event(ClutterActor* widget, ClutterScrollEvent* event)
+static gboolean webkit_web_view_scroll_event(ClutterActor* actor, ClutterScrollEvent* event)
 {
     WebKitWebView* webView = WEBKIT_WEB_VIEW(actor);
 
@@ -869,7 +874,7 @@ static gboolean webkit_navigation_request_handled(GSignalInvocationHint* ihint, 
 //     return coreAccessible->wrapper();
 // }
 
-static gdouble webViewGetDPI()
+static gdouble webViewGetDPI(WebKitWebView *webView)
 {
     WebKitWebViewPrivate* priv = webView->priv;
     WebKitWebSettings* webSettings = priv->webSettings.get();
@@ -881,7 +886,7 @@ static gdouble webViewGetDPI()
     gdouble DPI = defaultDPI;
     ClutterBackend* backend = clutter_get_default_backend();
     if (backend) {
-        DPI = clutter_backend_get_resolution();
+        DPI = clutter_backend_get_resolution(clutter_get_default_backend());
         if (DPI == -1)
             DPI = defaultDPI;
     }
@@ -899,7 +904,7 @@ static void webkit_web_view_screen_changed(ClutterActor* widget)
 
     WebKitWebSettings* webSettings = priv->webSettings.get();
     Settings* settings = core(webView)->settings();
-    gdouble DPI = webViewGetDPI();
+    gdouble DPI = webViewGetDPI(webView);
 
     guint defaultFontSize, defaultMonospaceFontSize, minimumFontSize, minimumLogicalFontSize;
 
@@ -922,6 +927,65 @@ static void webkit_web_view_screen_changed(ClutterActor* widget)
 //    gdk_window_get_origin(window, &x, &y);
 //    return clientPoint + IntSize(x, y);
 //}
+
+static void webkit_web_view_paint(ClutterActor* actor)
+{
+    printf("webkit_web_view_paint\n");
+    
+    WebKitWebView* webView = WEBKIT_WEB_VIEW(actor);
+    WebKitWebViewPrivate* priv = webView->priv;
+
+    CLUTTER_ACTOR_CLASS(webkit_web_view_parent_class)->paint(actor);
+
+    HashSet<ClutterActor*> children = priv->children;
+    HashSet<ClutterActor*>::const_iterator end = children.end();
+    for (HashSet<ClutterActor*>::const_iterator current = children.begin(); current != end; ++current) {
+        if (CLUTTER_ACTOR_IS_VISIBLE(*current)) {
+            clutter_actor_paint(*current);
+        }
+    }
+}
+
+static void
+webkit_web_view_allocate (ClutterActor          *actor,
+                          const ClutterActorBox *box,
+                          ClutterAllocationFlags flags)
+{
+    printf("webkit_web_view_allocate\n");
+    
+    gint                  width, height;
+    WebKitWebView        *webView = WEBKIT_WEB_VIEW (actor);
+    WebKitWebViewPrivate *priv = webView->priv;
+
+    width  = int (box->x2 - box->x1);
+    height = int (box->y2 - box->y1);
+    
+    // Set the size of the texture
+    // if (priv->slide_init >= 0)
+    //     clutter_cairo_surface_resize (CLUTTER_CAIRO (actor),
+    //                                   width  + priv->slide_width,
+    //                                   height + priv->slide_height);
+    // else
+        clutter_cairo_texture_set_surface_size (CLUTTER_CAIRO_TEXTURE (actor), width, height);
+
+    // Set the size of the web view
+    Frame* frame = core(webView)->mainFrame();
+
+    if (!frame->view()) {
+	CLUTTER_ACTOR_CLASS (webkit_web_view_parent_class)->allocate(actor, box, flags);
+	return;
+    }
+
+    frame->view()->resize(width, height);
+    frame->view()->forceLayout();
+    frame->view()->adjustViewSize();
+    
+    CLUTTER_ACTOR_CLASS (webkit_web_view_parent_class)->allocate (actor, box, flags);
+
+    // Redraw page
+    //frame->view()->addToDirtyRegion(frame->view()->windowClipRect());
+    //frame->view()->updateBackingStore();
+}
 
 static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
 {
@@ -1324,7 +1388,7 @@ static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
      *
      * Deprecated: Use the "load-status" property instead.
      */
-    webkit_web_view_signals[LOAD_FINISHED] = g_signal_new("load-finished",
+    webkit_web_view_signals[LOAD_FINISHED] = g_signal_new("webkit-load-finished",
             G_TYPE_FROM_CLASS(webViewClass),
             (GSignalFlags)G_SIGNAL_RUN_LAST,
             0,
@@ -1408,7 +1472,7 @@ static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
             NULL,
             g_cclosure_marshal_VOID__OBJECT,
             G_TYPE_NONE, 1,
-            G_TYPE_LIST);
+            G_TYPE_POINTER);
 
     /**
      * WebKitWebView::print-requested
@@ -1900,7 +1964,7 @@ static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
     webViewClass->paste_clipboard = webkit_web_view_real_paste_clipboard;
     webViewClass->undo = webkit_web_view_real_undo;
     webViewClass->redo = webkit_web_view_real_redo;
-    webViewClass->move_cursor = webkit_web_view_real_move_cursor;
+//    webViewClass->move_cursor = webkit_web_view_real_move_cursor;
 
     GObjectClass* objectClass = G_OBJECT_CLASS(webViewClass);
     objectClass->dispose = webkit_web_view_dispose;
@@ -2276,6 +2340,66 @@ static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
     g_type_class_add_private(webViewClass, sizeof(WebKitWebViewPrivate));
 }
 
+static void webkit_web_view_real_add(ClutterContainer* container, ClutterActor* actor)
+{
+    WebKitWebView* webView = WEBKIT_WEB_VIEW(container);
+    WebKitWebViewPrivate* priv = webView->priv;
+
+    g_object_ref (actor);
+    priv->children.add(actor);
+    clutter_actor_set_parent(actor, CLUTTER_ACTOR(container));
+    g_object_unref (actor);
+}
+
+static void webkit_web_view_real_remove(ClutterContainer* container, ClutterActor* actor)
+{
+    WebKitWebView* webView = WEBKIT_WEB_VIEW(container);
+    WebKitWebViewPrivate* priv = webView->priv;
+
+    g_object_ref(actor);
+    
+    priv->children.remove(actor);
+    if(CLUTTER_ACTOR_IS_VISIBLE(CLUTTER_ACTOR(container))) {
+	clutter_actor_queue_redraw(CLUTTER_ACTOR(container));
+    }
+
+    g_object_unref(actor);
+}
+
+static void webkit_web_view_real_foreach(ClutterContainer* container, ClutterCallback callback, gpointer callbackData)
+{
+    WebKitWebView* webView = WEBKIT_WEB_VIEW(container);
+    WebKitWebViewPrivate* priv = webView->priv;
+
+    HashSet<ClutterActor*> children = priv->children;
+    HashSet<ClutterActor*>::const_iterator end = children.end();
+    for (HashSet<ClutterActor*>::const_iterator current = children.begin(); current != end; ++current) {
+	(*callback)(*current, callbackData);
+    }
+}
+
+static void webkit_web_view_real_raise(ClutterContainer* container, ClutterActor* actor, ClutterActor* sibling)
+{
+}
+
+static void webkit_web_view_real_lower(ClutterContainer* container, ClutterActor* actor, ClutterActor* sibling)
+{
+}
+
+static void webkit_web_view_real_sort_depth_order(ClutterContainer* container)
+{
+}
+
+static void webkit_web_view_container_iface_init (ClutterContainerIface *iface)
+{
+    iface->add = webkit_web_view_real_add;
+    iface->remove = webkit_web_view_real_remove;
+    iface->foreach = webkit_web_view_real_foreach;
+    iface->raise = webkit_web_view_real_raise;
+    iface->lower = webkit_web_view_real_lower;
+    iface->sort_depth_order = webkit_web_view_real_sort_depth_order;
+}
+
 static void webkit_web_view_update_settings(WebKitWebView* webView)
 {
     WebKitWebViewPrivate* priv = webView->priv;
@@ -2383,7 +2507,7 @@ static void webkit_web_view_update_settings(WebKitWebView* webView)
 
 static inline gint pixelsFromSize(WebKitWebView* webView, gint size)
 {
-    gdouble DPI = webViewGetDPI();
+    gdouble DPI = webViewGetDPI(webView);
     return size / 72.0 * DPI;
 }
 
@@ -2539,8 +2663,8 @@ static void webkit_web_view_init(WebKitWebView* webView)
 ClutterActor* webkit_web_view_new(guint width, guint height)
 {
     WebKitWebView* webView = WEBKIT_WEB_VIEW(g_object_new(WEBKIT_TYPE_WEB_VIEW, 
-        "surface-width", width + 512,
-        "surface-height", height + 1024, NULL));
+        "surface-width", width,
+        "surface-height", height, NULL));
 
     return CLUTTER_ACTOR(webView);
 }
@@ -3972,7 +4096,7 @@ void webkit_web_view_set_tooltip_text(WebKitWebView* webView, const char* toolti
  *
  * Since: 1.1.15
  **/
-WebKitHitTestResult* webkit_web_view_get_hit_test_result(WebKitWebView* webView, GdkEventButton* event)
+WebKitHitTestResult* webkit_web_view_get_hit_test_result(WebKitWebView* webView, ClutterButtonEvent* event)
 {
     g_return_val_if_fail(WEBKIT_IS_WEB_VIEW(webView), NULL);
     g_return_val_if_fail(event, NULL);

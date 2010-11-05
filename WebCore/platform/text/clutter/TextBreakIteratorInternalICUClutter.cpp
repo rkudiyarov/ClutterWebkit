@@ -1,9 +1,5 @@
 /*
- * Copyright (C) 2007 Luca Bruno <lethalman88@gmail.com>
- * Copyright (C) 2009 Holger Hans Peter Freyther
- * Copyright (C) 2010 Martin Robinson <mrobinson@webkit.org>
- * Copyright (C) 2010 Igalia S.L.
- * All rights reserved.
+ * Copyright (C) 2007 Alp Toker <alp@atoker.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,27 +15,23 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
- *
  */
 
-#ifndef PasteboardHelper_h
-#define PasteboardHelper_h
-
-/*
- * FIXME: this is for WebCore support and must be removed once
- * a better solution is found
- */
-
-#include "Frame.h"
+#include "config.h"
+#include "TextBreakIteratorInternalICU.h"
 
 namespace WebCore {
 
-class PasteboardHelper {
-public:
-    virtual ~PasteboardHelper() {}
-    enum PasteboardTargetType { TargetTypeText, TargetTypeMarkup, TargetTypeURIList, TargetTypeNetscapeURL, TargetTypeImage, TargetTypeUnknown };
-};
-
+const char* currentSearchLocaleID()
+{
+    // FIXME: Should use system locale.
+    return "";
 }
 
-#endif // PasteboardHelper_h
+const char* currentTextBreakLocaleID()
+{
+    // FIXME: Should use system locale.
+    return "en_us";
+}
+
+}

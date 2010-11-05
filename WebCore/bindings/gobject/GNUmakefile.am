@@ -545,14 +545,7 @@ if USE_CLUTTER
 endif
 endif
 
-gdom_class_list :=
-if USE_GTK
-gdom_class_list += $(subst WebKitDOM,, $(filter-out %Private, $(basename $(notdir $(webkitgtk_gdom_built_sources)))))
-endif
-if USE_CLUTTER
-gdom_class_list += $(subst WebKitDOM,, $(filter-out %Private, $(basename $(notdir $(webkitclutter_gdom_built_sources)))))
-endif
-
+gdom_class_list := $(subst WebKitDOM,, $(filter-out %Private, $(basename $(notdir $(webkitplatform_gdom_built_sources)))))
 gdom_class_list += Object EventTarget
 DerivedSources/webkit/webkitdom.h: $(WebCore)/bindings/scripts/gobject-generate-headers.pl $(WebCore)/bindings/gobject/GNUmakefile.am
 	$(AM_V_GEN)echo $(gdom_class_list) | $(PERL) $< gdom > $@

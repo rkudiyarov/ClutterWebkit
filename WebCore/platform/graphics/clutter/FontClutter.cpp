@@ -277,7 +277,7 @@ clutter_cairo_region (cairo_t   *cr,
   n_boxes = cairo_region_num_rectangles(region);
 
   for (i = 0; i < n_boxes; i++) {
-    cairo_region_get_rectangle(region, i, &box)
+    cairo_region_get_rectangle(region, i, &box);
     cairo_rectangle (cr,
 		     box.x,
 		     box.y,

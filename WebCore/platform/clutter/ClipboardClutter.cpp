@@ -38,7 +38,7 @@ namespace WebCore {
 
 PassRefPtr<Clipboard> Editor::newGeneralClipboard(ClipboardAccessPolicy policy, Frame* frame)
 {
-    return ClipboardClutter::create(policy, CopyAndPaste);
+    return ClipboardClutter::create(policy, Clipboard::CopyAndPaste);
 }
 
 PassRefPtr<Clipboard> Clipboard::create(ClipboardAccessPolicy policy, DragData* dragData, Frame* frame)

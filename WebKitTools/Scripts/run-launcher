@@ -64,6 +64,10 @@ if (isQt()) {
         $launcherPath = catdir($launcherPath, "Programs", "GtkLauncher");
     }
     
+    if (isClutter()) {
+        $launcherPath = catdir($launcherPath, "Programs", "ClutterLauncher");
+    }
+    
     if (isEfl()) {
         $launcherPath = catdir($launcherPath, "Programs", "EWebLauncher");
     }

@@ -146,10 +146,10 @@ AC_MSG_RESULT([$with_unicode_backend])
 
 if test "$with_unicode_backend" = "icu"; then
         case "$host" in
-            *-*-darwin*)
-		UNICODE_CFLAGS="-I$srcdir/JavaScriptCore/icu -I$srcdir/WebCore/icu"
-		UNICODE_LIBS="-licucore"
-                ;;
+#            *-*-darwin*)
+#		UNICODE_CFLAGS="-I$srcdir/JavaScriptCore/icu -I$srcdir/WebCore/icu"
+#		UNICODE_LIBS="-licucore"
+#                ;;
             *-*-mingw*)
 		UNICODE_CFLAGS=""
 		UNICODE_LIBS="-licuin -licuuc"

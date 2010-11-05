@@ -59,7 +59,7 @@ PlatformWheelEvent::PlatformWheelEvent(ClutterScrollEvent* event)
     m_wheelTicksX = m_deltaX;
     m_wheelTicksY = m_deltaY;
     
-    ClutterUnit ux, uy;
+    gfloat ux, uy;
 
     if (clutter_actor_transform_stage_point(event->source,
 					    event->x,

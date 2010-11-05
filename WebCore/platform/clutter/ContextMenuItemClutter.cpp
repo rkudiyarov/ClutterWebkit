@@ -58,10 +58,6 @@ static const char* clutterStockIDFromContextMenuAction(const ContextMenuAction& 
         return STOCK_ICON_NAME;
     case ContextMenuItemTagPaste:
         return STOCK_ICON_NAME;
-    case ContextMenuItemTagDelete:
-        return STOCK_ICON_NAME;
-    case ContextMenuItemTagSelectAll:
-        return STOCK_ICON_NAME;
     case ContextMenuItemTagSpellingGuess:
         return 0;
     case ContextMenuItemTagIgnoreSpelling:

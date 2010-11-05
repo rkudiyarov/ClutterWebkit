@@ -22,7 +22,7 @@
 
 extern "C" {
 
-G_DEFINE_TYPE (WebkitActor, webkit_actor, CLUTTER_TYPE_CAIRO);
+G_DEFINE_TYPE (WebkitActor, webkit_actor, CLUTTER_TYPE_CAIRO_TEXTURE);
 
 #define GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), WEBKIT_TYPE_ACTOR, WebkitActorPrivate))
 

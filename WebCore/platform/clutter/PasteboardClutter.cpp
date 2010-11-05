@@ -52,7 +52,7 @@ Pasteboard::~Pasteboard()
 
 void Pasteboard::writeSelection(Range* selectedRange, bool canSmartCopyOrDelete, Frame* frame)
 {
-    notImplemented()
+    notImplemented();
 }
 
 void Pasteboard::writePlainText(const String& text)

@@ -23,6 +23,7 @@
 
 #include "FocusController.h"
 #include "Frame.h"
+#include "NotImplemented.h"
 #include "webkitwebframe.h"
 #include "webkitwebview.h"
 #include "webkitprivate.h"
@@ -31,16 +32,17 @@ using namespace WebCore;
 
 namespace WebKit {
 
-PasteboardHelperGtk::PasteboardHelperGtk()
+PasteboardHelperClutter::PasteboardHelperClutter()
 {
-    initializeTargetList();
+    //initializeTargetList();
+    notImplemented();
 }
 
-PasteboardHelperGtk::~PasteboardHelperGtk()
+PasteboardHelperClutter::~PasteboardHelperClutter()
 {
 }
 
-guint PasteboardHelperGtk::getIdForTargetType(PasteboardTargetType type)
+guint PasteboardHelperClutter::getIdForTargetType(PasteboardTargetType type)
 {
     if (type == TargetTypeMarkup)
         return WEBKIT_WEB_VIEW_TARGET_INFO_HTML;

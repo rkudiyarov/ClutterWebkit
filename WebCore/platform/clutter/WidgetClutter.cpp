@@ -36,6 +36,9 @@
 #include "RenderObject.h"
 #include "NotImplemented.h"
 
+#include <clutter/clutter.h>
+#include <webkit/webkitactor.h>
+
 namespace WebCore {
 
 Widget::Widget(PlatformWidget widget)

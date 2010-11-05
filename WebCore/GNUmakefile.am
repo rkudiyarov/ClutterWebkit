@@ -3659,14 +3659,11 @@ webcoreclutter_sources += \
 	WebCore/platform/graphics/clutter/ColorClutter.cpp \
 	WebCore/platform/graphics/clutter/FontClutter.cpp \
 	WebCore/platform/graphics/clutter/IconClutter.cpp \
-	WebCore/platform/graphics/clutter/ImageBufferClutter.cpp \
 	WebCore/platform/graphics/clutter/ImageClutter.cpp \
 	WebCore/platform/graphics/clutter/IntPointClutter.cpp \
 	WebCore/platform/graphics/clutter/IntRectClutter.cpp \
 	WebCore/platform/clutter/ClipboardClutter.cpp \
 	WebCore/platform/clutter/ClipboardClutter.h \
-	WebCore/platform/clutter/ClipboardUtilitiesClutter.cpp \
-	WebCore/platform/clutter/ClipboardUtilitiesClutter.h \
 	WebCore/platform/clutter/ContextMenuClutter.cpp \
 	WebCore/platform/clutter/ContextMenuItemClutter.cpp \
 	WebCore/platform/clutter/CursorClutter.cpp \
@@ -3686,7 +3683,6 @@ webcoreclutter_sources += \
 	WebCore/platform/clutter/MIMETypeRegistryClutter.cpp \
 	WebCore/platform/clutter/MouseEventClutter.cpp \
 	WebCore/platform/clutter/PasteboardClutter.cpp \
-	WebCore/platform/clutter/PasteboardHelper.cpp \
 	WebCore/platform/clutter/PasteboardHelper.h \
 	WebCore/platform/clutter/PlatformScreenClutter.cpp \
 	WebCore/platform/clutter/PopupMenuClutter.cpp \
@@ -3695,7 +3691,6 @@ webcoreclutter_sources += \
 	WebCore/platform/clutter/RenderThemeClutter.h \
 	WebCore/platform/clutter/ScrollbarThemeClutter.cpp \
 	WebCore/platform/clutter/ScrollbarThemeClutter.h \
-	WebCore/platform/clutter/ScrollViewClutter.cpp \
 	WebCore/platform/clutter/SearchPopupMenuClutter.cpp \
 	WebCore/platform/clutter/SearchPopupMenuClutter.h \
 	WebCore/platform/clutter/SharedBufferClutter.cpp \
