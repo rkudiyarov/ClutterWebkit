@@ -751,8 +751,9 @@ module window {
 #endif
 #endif
 
-        attribute [Conditional=DATABASE] SQLExceptionConstructor SQLException;
-
+#if defined(ENABLE_DATABASE) && ENABLE_DATABASE
+        attribute SQLExceptionConstructor SQLException;
+#endif
         attribute [Conditional=TOUCH_EVENTS] TouchEventConstructor TouchEvent;
 
         attribute DOMFormDataConstructor FormData;
