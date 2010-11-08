@@ -21,6 +21,7 @@
 #include "config.h"
 #include "webkitnetworkrequest.h"
 
+#include "GRefPtr.h"
 #include "ResourceRequest.h"
 #include "webkitprivate.h"
 #include <wtf/text/CString.h>

@@ -26,10 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef InspectorClientGtk_h
-#define InspectorClientGtk_h
+#ifndef InspectorClientClutter_h
+#define InspectorClientClutter_h
 
 #include "GOwnPtr.h"
+#include "GRefPtr.h"
 #include "InspectorClient.h"
 #include "InspectorFrontendClientLocal.h"
 #include "webkitwebview.h"

@@ -1,4 +1,4 @@
-webkitplatform_gdom_built_sources := \
+webkitplatform_gdom_built_sources += \
 	DerivedSources/webkit/WebKitDOMAttr.cpp \
 	DerivedSources/webkit/WebKitDOMAttrPrivate.h \
 	DerivedSources/webkit/WebKitDOMBarInfo.cpp \
@@ -245,7 +245,7 @@ webkitplatform_gdom_built_sources := \
 	DerivedSources/webkit/WebKitDOMXPathResult.cpp \
 	DerivedSources/webkit/WebKitDOMXPathResultPrivate.h
 
-webkitplatform_built_h_api := \
+webkitplatform_built_h_api += \
     DerivedSources/webkit/WebKitDOMCSSRule.h \
     DerivedSources/webkit/WebKitDOMCSSRuleList.h \
     DerivedSources/webkit/WebKitDOMCSSStyleDeclaration.h \
@@ -388,15 +388,6 @@ if ENABLE_VIDEO
     webkitplatform_gdom_built_sources += \
     	DerivedSources/webkit/WebKitDOMHTMLAudioElement.cpp \
     	DerivedSources/webkit/WebKitDOMHTMLAudioElementPrivate.h
-endif
-
-if USE_GTK
-    webkitgtk_gdom_built_sources += $(webkitplatform_gdom_built_sources)
-    webkitgtk_built_h_api += $(webkitplatform_built_h_api)
-endif
-if USE_CLUTTER
-    webkitclutter_gdom_built_sources += $(webkitplatform_gdom_built_sources)
-    webkitclutter_built_h_api += $(webkitplatform_built_h_api)
 endif
 
 gdom_class_list := $(subst WebKitDOM,, $(filter-out %Private, $(basename $(notdir $(webkitplatform_gdom_built_sources)))))
