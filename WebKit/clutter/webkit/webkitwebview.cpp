@@ -525,8 +525,6 @@ webkit_web_view_expose(WebkitActor* actor, WebkitActorRectangle* rect)
 //    Frame* frame = core(webView)->mainFrame();
     cairo_t* cr;
     if (frame->contentRenderer() && frame->view()) {
-        printf("webkit_web_view_expose:\n");
-        
         frame->view()->updateLayoutAndStyleIfNeededRecursive();
 
         cr = clutter_cairo_texture_create_region(CLUTTER_CAIRO_TEXTURE(actor),
@@ -545,7 +543,6 @@ webkit_web_view_expose(WebkitActor* actor, WebkitActorRectangle* rect)
 
         paintWebView(frame, priv->transparent, ctx, IntRect(*rect), paintRects);
     }
-    printf("Cairo context refcount: %d\n\n", cairo_get_reference_count(cr));
 }
 
 static gboolean webkit_web_view_key_press_event(ClutterActor* actor, ClutterKeyEvent* event)
@@ -929,9 +926,7 @@ static void webkit_web_view_screen_changed(ClutterActor* widget)
 //}
 
 static void webkit_web_view_paint(ClutterActor* actor)
-{
-    printf("webkit_web_view_paint\n");
-    
+{   
     WebKitWebView* webView = WEBKIT_WEB_VIEW(actor);
     WebKitWebViewPrivate* priv = webView->priv;
 
@@ -951,8 +946,6 @@ webkit_web_view_allocate (ClutterActor          *actor,
                           const ClutterActorBox *box,
                           ClutterAllocationFlags flags)
 {
-    printf("webkit_web_view_allocate\n");
-    
     gint                  width, height;
     WebKitWebView        *webView = WEBKIT_WEB_VIEW (actor);
     WebKitWebViewPrivate *priv = webView->priv;

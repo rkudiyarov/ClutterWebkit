@@ -302,12 +302,19 @@ fi
 # minimum base dependencies
 LIBSOUP_REQUIRED_VERSION=2.28.2
 CAIRO_REQUIRED_VERSION=1.6
+if test "$with_clutter" = "yes"; then
+    CAIRO_REQUIRED_VERSION=1.10
+fi
+
 FONTCONFIG_REQUIRED_VERSION=2.4
 FREETYPE2_REQUIRED_VERSION=9.0
 LIBXML_REQUIRED_VERSION=2.6
 
 # minimum GTK+ base dependencies
 PANGO_REQUIRED_VERSION=1.12
+if test "$with_clutter" = "yes"; then
+    PANGO_REQUIRED_VERSION=1.27.1
+fi
 
 CLUTTER_REQUIRED_VERSION=1.4
 
@@ -892,7 +899,9 @@ if test "$with_font_backend" = "freetype"; then
 fi
 
 # check if sqlite 3 is available
-if test "$enable_icon_database" = "yes" || \
+# FIXME: seems like sqlite dependency is needed even in minimal configuration
+if test "1" = "1" || \
+   test "$enable_icon_database" = "yes" || \
    test "$enable_database" = "yes" || \
    test "$enable_offline_web_applications" = "yes" || \
    test "$enable_dom_storage" = "yes"; then
