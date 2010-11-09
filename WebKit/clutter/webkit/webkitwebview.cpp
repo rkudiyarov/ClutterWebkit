@@ -644,6 +644,52 @@ static gboolean webkit_web_view_scroll_event(ClutterActor* actor, ClutterScrollE
     return frame->eventHandler()->handleWheelEvent(wheelEvent);
 }
 
+static gboolean webkit_web_view_enter_event(ClutterActor* actor, ClutterCrossingEvent *event) {
+    WebKitWebView* webView = WEBKIT_WEB_VIEW(actor);
+
+    Frame* frame = core(webView)->mainFrame();
+    if (!frame->view())
+        return FALSE;
+    
+    ClutterMotionEvent motionEvent;
+    motionEvent.type = CLUTTER_MOTION;
+    motionEvent.time = event->time;
+    motionEvent.flags = CLUTTER_EVENT_FLAG_SYNTHETIC;
+    motionEvent.stage = event->stage;
+    motionEvent.source = event->source;
+    motionEvent.x = event->x;
+    motionEvent.y = event->y;
+    motionEvent.modifier_state = CLUTTER_MODIFIER_MASK;
+    motionEvent.axes = 0;
+    motionEvent.device = event->device;
+    
+    return frame->eventHandler()->mouseMoved(PlatformMouseEvent(&motionEvent));
+}
+
+static gboolean webkit_web_view_leave_event(ClutterActor* actor, ClutterCrossingEvent *event) {
+    printf("leave event\n");
+    
+    WebKitWebView* webView = WEBKIT_WEB_VIEW(actor);
+
+    Frame* frame = core(webView)->mainFrame();
+    if (!frame->view())
+        return FALSE;
+
+    ClutterMotionEvent motionEvent;
+    motionEvent.type = CLUTTER_MOTION;
+    motionEvent.time = event->time;
+    motionEvent.flags = CLUTTER_EVENT_FLAG_SYNTHETIC;
+    motionEvent.stage = event->stage;
+    motionEvent.source = event->source;
+    motionEvent.x = -1;
+    motionEvent.y = -1;
+    motionEvent.modifier_state = CLUTTER_MODIFIER_MASK;
+    motionEvent.axes = 0;
+    motionEvent.device = event->device;
+    
+    return frame->eventHandler()->mouseMoved(PlatformMouseEvent(&motionEvent));
+}
+
 static WebKitWebView* webkit_web_view_real_create_web_view(WebKitWebView*, WebKitWebFrame*)
 {
     return 0;
@@ -1978,6 +2024,8 @@ static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
     actorClass->motion_event = webkit_web_view_motion_event;
     actorClass->key_press_event = webkit_web_view_key_press_event;
     actorClass->key_release_event = webkit_web_view_key_release_event;
+    actorClass->enter_event = webkit_web_view_enter_event;
+    actorClass->leave_event = webkit_web_view_leave_event;
     actorClass->paint = webkit_web_view_paint;
     // actorClass->pick = webkit_web_view_pick;
     actorClass->allocate = webkit_web_view_allocate;

@@ -31,6 +31,7 @@
 #include <wtf/Assertions.h>
 #include <wtf/CurrentTime.h>
 #include <glib.h>
+#include <clutter/clutter.h>
 
 namespace WebCore {
 
@@ -63,10 +64,7 @@ void setSharedTimerFireTime(double fireTime)
     }
 
     stopSharedTimer();
-//    if (intervalInMS == 0)
-//        sharedTimer = g_idle_add_full(G_PRIORITY_DEFAULT, timeout_cb, NULL, NULL);
-//    else
-    sharedTimer = g_timeout_add_full(G_PRIORITY_DEFAULT, intervalInMS, timeout_cb, 0, 0);
+    sharedTimer = g_timeout_add_full(CLUTTER_PRIORITY_REDRAW, intervalInMS, timeout_cb, 0, 0);
 }
 
 void stopSharedTimer()

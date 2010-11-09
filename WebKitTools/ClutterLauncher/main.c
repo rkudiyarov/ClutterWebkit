@@ -67,6 +67,7 @@ int main(int argc, char *argv[])
     clutter_actor_show(stage);
     
     web_view = WEBKIT_WEB_VIEW(webkit_web_view_new(1024, 768));
+    g_object_set(web_view, "reactive", TRUE, NULL);
     
     g_signal_connect(web_view, "webkit-load-finished", G_CALLBACK(load_finished_cb), web_view);
     g_signal_connect (web_view, "notify::progress", G_CALLBACK (notify_progress_cb), web_view);
