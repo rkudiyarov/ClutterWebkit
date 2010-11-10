@@ -105,7 +105,7 @@ static void createAndAppendFontSubMenu(const HitTestResult& result, ContextMenuI
 
 #if !defined(BUILDING_ON_TIGER)
 
-#if !PLATFORM(GTK)
+#if !PLATFORM(GTK) && !PLATFORM(CLUTTER)
 
 static void createAndAppendSpellingAndGrammarSubMenu(const HitTestResult& result, ContextMenuItem& spellingAndGrammarMenuItem)
 {
@@ -138,7 +138,7 @@ static void createAndAppendSpellingAndGrammarSubMenu(const HitTestResult& result
     spellingAndGrammarMenuItem.setSubMenu(&spellingAndGrammarMenu);
 }
 
-#endif // !PLATFORM(GTK)
+#endif // !PLATFORM(GTK) && !PLATFORM(CLUTTER)
 
 #else
 
@@ -179,7 +179,7 @@ static void createAndAppendSpeechSubMenu(const HitTestResult& result, ContextMen
 
 #endif
  
-#if !PLATFORM(GTK)
+#if !PLATFORM(GTK) && !PLATFORM(CLUTTER)
 
 static void createAndAppendWritingDirectionSubMenu(const HitTestResult& result, ContextMenuItem& writingDirectionMenuItem)
 {
@@ -302,7 +302,7 @@ void ContextMenu::populate()
     ContextMenuItem LookInDictionaryItem(ActionType, ContextMenuItemTagLookUpInDictionary, 
         contextMenuItemTagLookUpInDictionary());
 #endif
-#if !PLATFORM(GTK)
+#if !PLATFORM(GTK) && !PLATFORM(CLUTTER)
     ContextMenuItem SearchWebItem(ActionType, ContextMenuItemTagSearchWeb, contextMenuItemTagSearchWeb());
 #endif
     ContextMenuItem CopyItem(ActionType, ContextMenuItemTagCopy, contextMenuItemTagCopy());
@@ -385,7 +385,7 @@ void ContextMenu::populate()
 #if PLATFORM(MAC)
                     appendItem(SearchSpotlightItem);
 #endif
-#if !PLATFORM(GTK)
+#if !PLATFORM(GTK) && !PLATFORM(CLUTTER)
                     appendItem(SearchWebItem);
                     appendItem(*separatorItem());
 #endif
@@ -491,7 +491,7 @@ void ContextMenu::populate()
 #if PLATFORM(MAC)
             appendItem(SearchSpotlightItem);
 #endif
-#if !PLATFORM(GTK)
+#if !PLATFORM(GTK) && !PLATFORM(CLUTTER)
             appendItem(SearchWebItem);
             appendItem(*separatorItem());
 #endif
@@ -514,7 +514,7 @@ void ContextMenu::populate()
         if (!inPasswordField) {
             appendItem(*separatorItem());
 #ifndef BUILDING_ON_TIGER
-#if !PLATFORM(GTK)
+#if !PLATFORM(GTK) && !PLATFORM(CLUTTER)
             ContextMenuItem SpellingAndGrammarMenuItem(SubmenuType, ContextMenuItemTagSpellingMenu, 
                 contextMenuItemTagSpellingMenu());
             createAndAppendSpellingAndGrammarSubMenu(m_hitTestResult, SpellingAndGrammarMenuItem);
@@ -536,7 +536,7 @@ void ContextMenu::populate()
             createAndAppendTransformationsSubMenu(m_hitTestResult, transformationsMenuItem);
             appendItem(transformationsMenuItem);
 #endif
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(CLUTTER)
             bool shouldShowFontMenu = frame->editor()->canEditRichly();
 #else
             bool shouldShowFontMenu = true;
@@ -552,7 +552,7 @@ void ContextMenu::populate()
             createAndAppendSpeechSubMenu(m_hitTestResult, SpeechMenuItem);
             appendItem(SpeechMenuItem);
 #endif
-#if !PLATFORM(GTK)
+#if !PLATFORM(GTK) && !PLATFORM(CLUTTER)
             ContextMenuItem WritingDirectionMenuItem(SubmenuType, ContextMenuItemTagWritingDirectionMenu, 
                 contextMenuItemTagWritingDirectionMenu());
             createAndAppendWritingDirectionSubMenu(m_hitTestResult, WritingDirectionMenuItem);
@@ -781,7 +781,7 @@ void ContextMenu::checkOrEnableIfNeeded(ContextMenuItem& item) const
         case ContextMenuItemTagStopSpeaking:
             break;
 #endif
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || PLATFORM(CLUTTER)
         case ContextMenuItemTagGoBack:
             shouldEnable = frame->page() && frame->page()->canGoBackOrForward(-1);
             break;

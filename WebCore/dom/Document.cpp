@@ -3176,7 +3176,7 @@ bool Document::setFocusedNode(PassRefPtr<Node> newFocusedNode)
         }
     }
 
-#if PLATFORM(MAC) || PLATFORM(WIN) || PLATFORM(GTK) || PLATFORM(CHROMIUM)
+#if PLATFORM(MAC) || PLATFORM(WIN) || PLATFORM(GTK) || PLATFORM(CHROMIUM) || PLATFORM(CLUTTER)
     if (!focusChangeBlocked && m_focusedNode && AXObjectCache::accessibilityEnabled()) {
         RenderObject* oldFocusedRenderer = 0;
         RenderObject* newFocusedRenderer = 0;
