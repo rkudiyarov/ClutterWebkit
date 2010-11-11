@@ -1261,7 +1261,7 @@ static const char* MozillaUserAgent = "Mozilla/5.0 ("
         "Windows; U; Windows NT 5.1;"
 #elif defined(XP_UNIX)
 // The Gtk port uses X11 plugins in Mac.
-#if OS(DARWIN) && PLATFORM(GTK)
+#if OS(DARWIN) && (PLATFORM(GTK) || PLATFORM(CLUTTER))
     "X11; U; Intel Mac OS X;"
 #else
     "X11; U; Linux i686;"

@@ -316,7 +316,7 @@ if test "$with_clutter" = "yes"; then
     PANGO_REQUIRED_VERSION=1.27.1
 fi
 
-CLUTTER_REQUIRED_VERSION=1.4
+CLUTTER_REQUIRED_VERSION=1.3
 
 # optional modules
 LIBXSLT_REQUIRED_VERSION=1.1.7
@@ -900,8 +900,7 @@ fi
 
 # check if sqlite 3 is available
 # FIXME: seems like sqlite dependency is needed even in minimal configuration
-if test "1" = "1" || \
-   test "$enable_icon_database" = "yes" || \
+if test "$enable_icon_database" = "yes" || \
    test "$enable_database" = "yes" || \
    test "$enable_offline_web_applications" = "yes" || \
    test "$enable_dom_storage" = "yes"; then
