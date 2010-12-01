@@ -46,7 +46,7 @@
 #include <wx/graphics.h>
 #endif
 
-#if PLATFORM(WIN) || (PLATFORM(QT) && OS(WINDOWS)) || (PLATFORM(WX) && OS(WINDOWS))
+#if PLATFORM(WIN) || (PLATFORM(QT) && OS(WINDOWS)) || (PLATFORM(WX) && OS(WINDOWS) || (PLATFORM(CLUTTER) && OS(WINDOWS)))
 #if COMPILER(MINGW) && !COMPILER(MINGW64)
 typedef struct _XFORM XFORM;
 #else
@@ -323,7 +323,7 @@ public:
     operator wxGraphicsMatrix() const;
 #endif
 
-#if PLATFORM(WIN) || (PLATFORM(QT) && OS(WINDOWS)) || (PLATFORM(WX) && OS(WINDOWS))
+#if PLATFORM(WIN) || (PLATFORM(QT) && OS(WINDOWS)) || (PLATFORM(WX) && OS(WINDOWS) || (PLATFORM(CLUTTER) && OS(WINDOWS)))
     operator XFORM() const;
 #endif
 

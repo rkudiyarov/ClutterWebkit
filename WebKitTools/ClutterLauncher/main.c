@@ -47,12 +47,31 @@ load_finished_cb (WebKitWebView* web_view, GParamSpec* pspec, gpointer data)
     printf("Load finished.\n");
 }
 
+static gboolean
+timeout_cb(gpointer data)
+{
+    WebKitWebView *web_view = (WebKitWebView*)data;
+    WebkitActorRectangle uRect;
+    uRect.x = 0;
+    uRect.y = 0;
+    uRect.width = 1024;
+    uRect.height = 768;
+    
+    printf("Screen refresh.\n");
+    
+    webkit_actor_queue_expose(WEBKIT_ACTOR(web_view), &uRect);
+    
+    return TRUE;
+}
+
 int main(int argc, char *argv[])
 {
     ClutterActor *stage;
     WebKitWebView *web_view;
+    /*
     ClutterConstraint *width_binding;
     ClutterConstraint *height_binding;
+    */
     
     clutter_init(&argc, &argv);
     
@@ -72,11 +91,13 @@ int main(int argc, char *argv[])
     g_signal_connect(web_view, "webkit-load-finished", G_CALLBACK(load_finished_cb), web_view);
     g_signal_connect (web_view, "notify::progress", G_CALLBACK (notify_progress_cb), web_view);
     
+    /*
     width_binding = clutter_bind_constraint_new(stage, CLUTTER_BIND_WIDTH, 0);
     height_binding = clutter_bind_constraint_new(stage, CLUTTER_BIND_HEIGHT, 0);
     
     clutter_actor_add_constraint(CLUTTER_ACTOR(web_view), width_binding);
     clutter_actor_add_constraint(CLUTTER_ACTOR(web_view), height_binding);
+    */
     
     clutter_container_add_actor(CLUTTER_CONTAINER(stage), CLUTTER_ACTOR(web_view));
     
@@ -91,6 +112,8 @@ int main(int argc, char *argv[])
     paint(ctx);
 */    
     clutter_actor_show(CLUTTER_ACTOR(web_view));
+    
+    g_timeout_add_full(G_PRIORITY_DEFAULT, 3000, timeout_cb, web_view, 0);
     
     clutter_main();
     

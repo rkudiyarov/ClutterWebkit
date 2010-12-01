@@ -198,7 +198,7 @@ void PluginPackage::determineQuirks(const String& mimeType)
         if (compareFileVersion(flashTenVersion) >= 0) {
             // Flash 10.0 b218 doesn't like having a NULL window handle
             m_quirks.add(PluginQuirkDontSetNullWindowHandleOnDestroy);
-#if PLATFORM(QT)
+#if PLATFORM(QT) || PLATFORM(CLUTTER)
             m_quirks.add(PluginQuirkRequiresGtkToolKit);
 #endif
         } else {

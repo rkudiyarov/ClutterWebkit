@@ -284,6 +284,10 @@ int readFromFile(PlatformFileHandle handle, char* data, int length)
 
 bool unloadModule(PlatformModule module)
 {
+#if !OS(WINDOWS)
     return g_module_close(module);
+#else
+    return ::FreeLibrary(module);
+#endif
 }
 }

@@ -96,6 +96,11 @@
 #include <wx/window.h>
 #endif
 
+#if PLATFORM(CLUTTER)
+#include <clutter/clutter.h>
+#include <clutter/clutter-win32.h>
+#endif
+
 static inline HWND windowHandleForPageClient(PlatformPageClient client)
 {
 #if PLATFORM(QT)
@@ -108,6 +113,10 @@ static inline HWND windowHandleForPageClient(PlatformPageClient client)
     if (!client)
         return 0;
     return (HWND)client->GetHandle();
+#elif PLATFORM(CLUTTER)
+    if (!client)
+        return 0;
+    return clutter_win32_get_stage_window(CLUTTER_STAGE(clutter_stage_get_default()));
 #else
     return client;
 #endif
@@ -293,6 +302,9 @@ static bool registerPluginView()
 
 #if PLATFORM(QT)
     WebCore::setInstanceHandle((HINSTANCE)(qWinAppInst()));
+#endif
+#if PLATFORM(CLUTTER)
+    WebCore::setInstanceHandle(::GetModuleHandle(NULL));
 #endif
 
     ASSERT(WebCore::instanceHandle());
@@ -625,7 +637,7 @@ void PluginView::paint(GraphicsContext* context, const IntRect& rect)
     // of the window and the plugin expects that the passed in DC has window coordinates.
     // In the Qt port we always draw in an offscreen buffer and therefore need to preserve
     // the translation set in getWindowsContext.
-#if !PLATFORM(QT) && !OS(WINCE)
+#if !PLATFORM(QT) && !PLATFORM(CLUTTER) && !OS(WINCE)
     if (!context->inTransparencyLayer()) {
         XFORM transform;
         GetWorldTransform(windowsContext.hdc(), &transform);
@@ -724,7 +736,7 @@ void PluginView::handleMouseEvent(MouseEvent* event)
     if (!dispatchNPEvent(npEvent))
         event->setDefaultHandled();
 
-#if !PLATFORM(QT) && !PLATFORM(WX) && !OS(WINCE)
+#if !PLATFORM(QT) && !PLATFORM(CLUTTER) && !PLATFORM(WX) && !OS(WINCE)
     // Currently, Widget::setCursor is always called after this function in EventHandler.cpp
     // and since we don't want that we set ignoreNextSetCursor to true here to prevent that.
     ignoreNextSetCursor = true;
@@ -969,7 +981,7 @@ bool PluginView::platformStart()
         HWND window = ::CreateWindowEx(0, kWebPluginViewdowClassName, 0, flags,
                                        0, 0, 0, 0, parentWindowHandle, 0, WebCore::instanceHandle(), 0);
 
-#if OS(WINDOWS) && (PLATFORM(QT) || PLATFORM(WX))
+#if OS(WINDOWS) && (PLATFORM(QT) || PLATFORM(CLUTTER) || PLATFORM(WX))
         m_window = window;
 #else
         setPlatformWidget(window);
@@ -1012,7 +1024,7 @@ void PluginView::platformDestroy()
 
 PassRefPtr<Image> PluginView::snapshot()
 {
-#if !PLATFORM(WX) && !OS(WINCE)
+#if !PLATFORM(WX) && !OS(WINCE) && !PLATFORM(CLUTTER)
     OwnPtr<HDC> hdc(CreateCompatibleDC(0));
 
     if (!m_isWindowed) {

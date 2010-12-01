@@ -1015,6 +1015,7 @@ gsize webkit_gc_count_javascript_objects()
 
 }
 
+/*
 AtkObject* webkit_web_frame_get_focused_accessible_element(WebKitWebFrame* frame)
 {
     g_return_val_if_fail(WEBKIT_IS_WEB_FRAME(frame), NULL);
@@ -1040,6 +1041,7 @@ AtkObject* webkit_web_frame_get_focused_accessible_element(WebKitWebFrame* frame
     return NULL;
 //#endif
 }
+*/
 
 // GtkPolicyType webkit_web_frame_get_horizontal_scrollbar_policy(WebKitWebFrame* frame)
 // {

@@ -607,10 +607,11 @@ sub builtDylibPathForName
         return $libraryDir . "libwebkitgtk-1.0.so";
     }
     if (isClutter()) {
-        if (isDarwin())
-	    return "$configurationProductDir/$libraryName/../.libs/libwebkit-clutter-1.0.dylib";
-        else
+        if (isDarwin()) {
+            return "$configurationProductDir/$libraryName/../.libs/libwebkit-clutter-1.0.dylib";
+        } else {
             return "$configurationProductDir/$libraryName/../.libs/libwebkit-clutter-1.0.so";
+        }
     }
     if (isEfl()) {
         return "$configurationProductDir/$libraryName/../.libs/libewebkit.so";

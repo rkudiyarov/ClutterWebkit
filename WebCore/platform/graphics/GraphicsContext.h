@@ -387,7 +387,7 @@ namespace WebCore {
         void drawWindowsBitmap(WindowsBitmap*, const IntPoint&);
 #endif
 
-#if (PLATFORM(QT) && defined(Q_WS_WIN)) || (PLATFORM(WX) && OS(WINDOWS))
+#if (PLATFORM(QT) && defined(Q_WS_WIN)) || (PLATFORM(WX) && OS(WINDOWS)) || (PLATFORM(CLUTTER) && OS(WINDOWS))
         HDC getWindowsContext(const IntRect&, bool supportAlphaBlend = true, bool mayCreateBitmap = true);
         void releaseWindowsContext(HDC, const IntRect&, bool supportAlphaBlend = true, bool mayCreateBitmap = true);
         bool shouldIncludeChildWindows() const { return false; }

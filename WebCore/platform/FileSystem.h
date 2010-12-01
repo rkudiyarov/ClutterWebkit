@@ -30,8 +30,11 @@
 #ifndef FileSystem_h
 #define FileSystem_h
 
-#if PLATFORM(GTK) || PLATFORM(CLUTTER)
+#if PLATFORM(GTK) || (PLATFORM(CLUTTER) && !OS(WINDOWS))
 #include <gmodule.h>
+#endif
+#if OS(WINDOWS) && PLATFORM(CLUTTER)
+#include <windows.h>
 #endif
 #if PLATFORM(QT)
 #include <QFile>
@@ -112,7 +115,7 @@ typedef unsigned PlatformModuleVersion;
 #if PLATFORM(QT)
 typedef QFile* PlatformFileHandle;
 const PlatformFileHandle invalidPlatformFileHandle = 0;
-#elif OS(WINDOWS)
+#elif OS(WINDOWS) && !PLATFORM(CLUTTER)
 typedef HANDLE PlatformFileHandle;
 // FIXME: -1 is INVALID_HANDLE_VALUE, defined in <winbase.h>. Chromium tries to
 // avoid using Windows headers in headers.  We'd rather move this into the .cpp.

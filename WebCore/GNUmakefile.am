@@ -3658,6 +3658,7 @@ webcoreclutter_sources += \
 	WebCore/platform/graphics/gstreamer/WebKitWebSourceGStreamer.h \
 	WebCore/platform/graphics/clutter/ColorClutter.cpp \
 	WebCore/platform/graphics/clutter/FontClutter.cpp \
+	WebCore/platform/graphics/clutter/GraphicsContextClutter.cpp \
 	WebCore/platform/graphics/clutter/IconClutter.cpp \
 	WebCore/platform/graphics/clutter/ImageClutter.cpp \
 	WebCore/platform/graphics/clutter/IntPointClutter.cpp \
@@ -3672,7 +3673,7 @@ webcoreclutter_sources += \
 	WebCore/platform/clutter/DragImageClutter.cpp \
 	WebCore/platform/clutter/EventLoopClutter.cpp \
 	WebCore/platform/clutter/FileChooserClutter.cpp \
-	WebCore/platform/clutter/FileSystemClutter.cpp \
+    WebCore/platform/clutter/FileSystemClutter.cpp \
 	WebCore/platform/clutter/GeolocationServiceClutter.cpp \
 	WebCore/platform/clutter/GeolocationServiceClutter.h \
 	WebCore/platform/clutter/KeyEventClutter.cpp \
@@ -3729,19 +3730,20 @@ webcoreclutter_sources += \
 	WebCore/platform/network/soup/ResourceResponseSoup.cpp \
 	WebCore/platform/network/soup/SocketStreamError.h \
 	WebCore/platform/network/soup/SocketStreamHandle.h \
-	WebCore/platform/network/soup/SocketStreamHandleSoup.cpp \
-	WebCore/plugins/clutter/PluginDataClutter.cpp \
-	WebCore/plugins/clutter/PluginPackageClutter.cpp \
-	WebCore/plugins/clutter/PluginViewClutter.cpp
+	WebCore/platform/network/soup/SocketStreamHandleSoup.cpp
 endif
 
 if USE_GTK
+webcoregtk_sources += \
+	WebCore/plugins/clutter/PluginDataClutter.cpp \
+	WebCore/plugins/clutter/PluginPackageClutter.cpp \
+	WebCore/plugins/clutter/PluginViewClutter.cpp
+
 if TARGET_X11
 webcoregtk_sources += \
 	WebCore/plugins/gtk/gtk2xtbin.c \
 	WebCore/plugins/gtk/gtk2xtbin.h \
 	WebCore/plugins/gtk/xembed.h
-endif
 endif
 
 if TARGET_WIN32
@@ -3751,6 +3753,32 @@ webcore_sources += \
 	WebCore/plugins/win/PluginDatabaseWin.cpp \
 	WebCore/plugins/win/PluginMessageThrottlerWin.cpp \
 	WebCore/plugins/win/PluginMessageThrottlerWin.h
+endif
+endif
+
+if USE_CLUTTER
+if TARGET_WIN32
+webcore_sources += \
+    WebCore/platform/ScrollAnimatorWin.cpp \
+	WebCore/platform/ScrollAnimatorWin.h \
+	WebCore/plugins/win/PluginDatabaseWin.cpp \
+	WebCore/plugins/win/PluginMessageThrottlerWin.cpp \
+	WebCore/plugins/win/PluginMessageThrottlerWin.h \
+	WebCore/plugins/win/PluginPackageWin.cpp \
+	WebCore/plugins/win/PluginViewWin.cpp \
+	WebCore/platform/win/BitmapInfo.cpp \
+	WebCore/platform/graphics/win/TransformationMatrixWin.cpp
+	
+webcore_cppflags += \
+    -I$(srcdir)/WebCore/platform/win \
+    -I$(srcdir)/WebCore/platform/graphics/win \
+    -DUNICODE
+else
+webcoreclutter_sources += \
+	WebCore/plugins/clutter/PluginDataClutter.cpp \
+	WebCore/plugins/clutter/PluginPackageClutter.cpp \
+	WebCore/plugins/clutter/PluginViewClutter.cpp
+endif
 endif
 
 # ----

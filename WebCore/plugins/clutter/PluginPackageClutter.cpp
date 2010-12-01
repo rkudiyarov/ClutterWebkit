@@ -103,6 +103,52 @@ bool PluginPackage::fetchInfo()
 #endif
 }
 
+static NPError staticPluginQuirkRequiresGtkToolKit_NPN_GetValue(NPP instance, NPNVariable variable, void* value)
+{
+    if (variable == NPNVToolkit) {
+        *static_cast<uint32_t*>(value) = 2;
+        return NPERR_NO_ERROR;
+    }
+
+    return NPN_GetValue(instance, variable, value);
+}
+
+static void initializeGtk(GModule* module = 0)
+{
+    // Ensures missing Gtk initialization in some versions of Adobe's flash player
+    // plugin do not cause crashes. See BR# 40567, 44324, and 44405 for details.  
+    if (module) {
+        typedef void *(*gtk_init_ptr)(int*, char***);
+        gtk_init_ptr gtkInit;
+        g_module_symbol(module, "gtk_init", (gpointer*)&gtkInit);
+        if (gtkInit) {
+            // Prevent gtk_init() from replacing the X error handlers, since the Gtk
+            // handlers abort when they receive an X error, thus killing the viewer.
+            // FIXME: this may require including X headers
+            int (*old_error_handler)(Display*, XErrorEvent*) = XSetErrorHandler(0);
+            int (*old_io_error_handler)(Display*) = XSetIOErrorHandler(0);
+
+            gtkInit(0, 0);
+
+            XSetErrorHandler(old_error_handler);
+            XSetIOErrorHandler(old_io_error_handler);
+            
+            return;
+        }
+    }
+
+    // FIXME: probably should use g_module_build_path here
+    GModule *library = g_module_open("libgtk-x11-2.0.so.0", G_MODULE_BIND_LOCAL);
+    if (library) {
+        typedef void *(*gtk_init_check_ptr)(int*, char***);
+        gtk_init_check_ptr gtkInitCheck;
+        g_module_symbol(library, "gtk_init_check", (gpointer*)&gtkInitCheck);
+        // NOTE: We're using gtk_init_check() since gtk_init() calls exit() on failure.
+        if (gtkInitCheck)
+            (void) gtkInitCheck(0, 0);
+    }
+}
+
 bool PluginPackage::load()
 {
     if (m_isLoaded) {
@@ -151,7 +197,20 @@ bool PluginPackage::load()
     m_pluginFuncs.size = sizeof(m_pluginFuncs);
 
     initializeBrowserFuncs();
-
+    
+    if (m_path.contains("npwrapper.")) {
+        // nspluginwrapper relies on the toolkit value to know if glib is available
+        // It does so in NP_Initialize with a null instance, therefore it is done this way:
+        m_browserFuncs.getvalue = staticPluginQuirkRequiresGtkToolKit_NPN_GetValue;
+        // Workaround Adobe's failure to properly initialize Gtk in some versions
+        // of their flash player plugin.
+        initializeGtk();
+    } else if (m_path.contains("flashplayer")) {
+        // Workaround Adobe's failure to properly initialize Gtk in some versions
+        // of their flash player plugin.
+        initializeGtk(m_module);
+    }
+    
 #if defined(XP_UNIX)
     npErr = NP_Initialize(&m_browserFuncs, &m_pluginFuncs);
 #else

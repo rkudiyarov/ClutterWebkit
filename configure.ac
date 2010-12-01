@@ -259,8 +259,8 @@ AS_IF([test "$with_gtk" != "no"], [
         WEBKITCLUTTER_PC_NAME=webkit-clutter
     
         # fixme: remove gail from dependencies
-        GAIL_PC_NAME=gail
-        GAIL_REQUIRED_VERSION=1.8
+        #GAIL_PC_NAME=gail
+        #GAIL_REQUIRED_VERSION=1.8
       
         WEBKIT_PLATFORM_API_MAJOR_VERSION=$WEBKITCLUTTER_API_MAJOR_VERSION
     
@@ -268,8 +268,22 @@ AS_IF([test "$with_gtk" != "no"], [
         AC_SUBST([WEBKITCLUTTER_API_MINOR_VERSION])
         AC_SUBST([WEBKITCLUTTER_API_VERSION])
         AC_SUBST([WEBKITCLUTTER_PC_NAME])
+        
+        # determine the clutter target
+        AC_MSG_CHECKING([the target windowing system])
+        AC_ARG_WITH(target,
+                    AC_HELP_STRING([--with-target=@<:@x11/win32/quartz/directfb@:>@],
+                                   [Select webkit target [default=x11]]),
+                    [],[with_target="x11"])
+
+        case "$with_target" in
+             x11|win32|quartz|directfb) ;;
+             *) AC_MSG_ERROR([Invalid target: must be x11, quartz, win32, or directfb.]) ;;
+        esac
+
+        AC_MSG_RESULT([$with_target])
     
-        with_target="x11"
+        #with_target="x11"
         WEBKIT_LIBRARY_NAME="webkit_clutter_${WEBKITCLUTTER_API_MAJOR_VERSION}_${WEBKITCLUTTER_API_MINOR_VERSION}"
         WEBKIT_PLATFORM_DIR="clutter"
         BACKEND_API_VERSION=1.0
@@ -316,7 +330,7 @@ if test "$with_clutter" = "yes"; then
     PANGO_REQUIRED_VERSION=1.27.1
 fi
 
-CLUTTER_REQUIRED_VERSION=1.3
+CLUTTER_REQUIRED_VERSION=1.0
 
 # optional modules
 LIBXSLT_REQUIRED_VERSION=1.1.7
@@ -362,7 +376,12 @@ PKG_CHECK_MODULES(ENCHANT, enchant >= $ENCHANT_REQUIRED_VERSION)
 AC_SUBST(ENCHANT_CFLAGS)
 AC_SUBST(ENCHANT_LIBS)
 
-PKG_CHECK_MODULES(GAIL, $GAIL_PC_NAME >= $GAIL_REQUIRED_VERSION)
+if test "$with_gtk" != "no"; then
+    PKG_CHECK_MODULES(GAIL, $GAIL_PC_NAME >= $GAIL_REQUIRED_VERSION)
+else
+    GAIL_CFLAGS=
+    GAIL_LIBS=
+fi
 AC_SUBST(GAIL_CFLAGS)
 AC_SUBST(GAIL_LIBS)
 

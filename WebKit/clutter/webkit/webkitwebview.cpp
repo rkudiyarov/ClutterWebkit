@@ -87,7 +87,6 @@
 #include "webkit/WebKitDOMDocumentPrivate.h"
 #include <wtf/text/CString.h>
 
-#include <stdio.h>
 //#include <gdk/gdkkeysyms.h>
 
 /**
