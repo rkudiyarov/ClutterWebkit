@@ -99,6 +99,8 @@ IntRect Widget::frameRect() const
 void Widget::setFrameRect(const IntRect& rect)
 {
     m_frame = rect;
+    
+    frameRectsChanged();
 }
 
 void Widget::releasePlatformWidget()

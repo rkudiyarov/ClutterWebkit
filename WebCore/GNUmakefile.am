@@ -3767,18 +3767,34 @@ webcore_sources += \
 	WebCore/plugins/win/PluginPackageWin.cpp \
 	WebCore/plugins/win/PluginViewWin.cpp \
 	WebCore/platform/win/BitmapInfo.cpp \
-	WebCore/platform/graphics/win/TransformationMatrixWin.cpp
+	WebCore/platform/win/BitmapInfo.h \
+	WebCore/platform/win/WebCoreInstanceHandle.cpp \
+	WebCore/platform/win/WebCoreInstanceHandle.h \
+	WebCore/platform/graphics/win/TransformationMatrixWin.cpp \
+	WebCore/plugins/clutter/PluginDataClutter.cpp
 	
 webcore_cppflags += \
     -I$(srcdir)/WebCore/platform/win \
     -I$(srcdir)/WebCore/platform/graphics/win \
+    -I$(srcdir)/WebCore/plugins/win \
     -DUNICODE
+
+else
+
+if TARGET_QUARTZ
+webcore_sources += \
+    WebCore/plugins/PluginDataNone.cpp \
+    WebCore/plugins/PluginPackageNone.cpp \
+    WebCore/plugins/PluginViewNone.cpp
 else
 webcoreclutter_sources += \
 	WebCore/plugins/clutter/PluginDataClutter.cpp \
 	WebCore/plugins/clutter/PluginPackageClutter.cpp \
 	WebCore/plugins/clutter/PluginViewClutter.cpp
 endif
+
+endif
+
 endif
 
 # ----

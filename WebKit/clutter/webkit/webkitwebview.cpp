@@ -2026,7 +2026,7 @@ static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
     actorClass->enter_event = webkit_web_view_enter_event;
     actorClass->leave_event = webkit_web_view_leave_event;
     actorClass->paint = webkit_web_view_paint;
-    // actorClass->pick = webkit_web_view_pick;
+//    actorClass->pick = webkit_web_view_pick;
     actorClass->allocate = webkit_web_view_allocate;
 
     /*
@@ -2702,10 +2702,11 @@ static void webkit_web_view_init(WebKitWebView* webView)
 
 ClutterActor* webkit_web_view_new(guint width, guint height)
 {
-    WebKitWebView* webView = WEBKIT_WEB_VIEW(g_object_new(WEBKIT_TYPE_WEB_VIEW, 
-        "surface-width", width,
-        "surface-height", height, NULL));
-
+    WebKitWebView* webView = WEBKIT_WEB_VIEW(g_object_new(WEBKIT_TYPE_WEB_VIEW,
+                                                          "surface-width", width,
+                                                          "surface-height", height, NULL));
+    clutter_actor_set_size (CLUTTER_ACTOR (webView), width, height);
+    
     return CLUTTER_ACTOR(webView);
 }
 

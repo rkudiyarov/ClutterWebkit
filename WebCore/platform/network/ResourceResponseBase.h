@@ -35,6 +35,11 @@
 #include <wtf/PassOwnPtr.h>
 #include <wtf/RefPtr.h>
 
+// support for time_t
+#if COMPILER(MINGW) && defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
+
 namespace WebCore {
 
 class ResourceResponse;

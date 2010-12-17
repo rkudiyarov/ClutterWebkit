@@ -32,6 +32,11 @@
 #include "SchedulePair.h"
 #endif
 
+// add time_t support for mingw compiler
+#if COMPILER(MINGW) && defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
+
 namespace JSC {
     class Debugger;
 }

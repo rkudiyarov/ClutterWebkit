@@ -50,6 +50,11 @@
 #define XMD_H
 #endif
 
+#if COMPILER(MINGW) && defined(_RPCNDR_H) && !defined(HAVE_BOOLEAN) 
+#define HAVE_BOOLEAN
+#define boolean int
+#endif
+
 extern "C" {
 #include "jpeglib.h"
 }

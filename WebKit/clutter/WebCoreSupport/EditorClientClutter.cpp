@@ -451,7 +451,8 @@ void EditorClient::checkSpellingOfString(const UChar* text, int length, int* mis
     if (!dicts)
         return;
 
-    gchar* ctext = g_utf16_to_utf8(const_cast<gunichar2*>(text), length, 0, 0, 0);
+    UChar *ttext = const_cast<UChar*>(text);
+    gchar* ctext = g_utf16_to_utf8((gunichar2*)ttext, length, 0, 0, 0);
     int utflen = g_utf8_strlen(ctext, -1);
 
     PangoLanguage* language = pango_language_get_default();

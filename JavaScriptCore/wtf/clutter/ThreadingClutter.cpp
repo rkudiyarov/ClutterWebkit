@@ -47,6 +47,17 @@ typedef HashMap<ThreadIdentifier, GThread*> ThreadMap;
 
 static Mutex* atomicallyInitializedStaticMutex;
 
+class InitThreadsHelper
+{
+public:
+    InitThreadsHelper() {
+        if (!g_thread_supported())
+            g_thread_init(NULL);
+    }
+};
+
+static InitThreadsHelper initThreadsHelperVar;
+
 static Mutex& threadMapMutex()
 {
     DEFINE_STATIC_LOCAL(Mutex, mutex, ());

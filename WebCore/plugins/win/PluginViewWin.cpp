@@ -101,6 +101,8 @@
 #include <clutter/clutter-win32.h>
 #endif
 
+#include <stdio.h>
+
 static inline HWND windowHandleForPageClient(PlatformPageClient client)
 {
 #if PLATFORM(QT)
@@ -601,7 +603,7 @@ void PluginView::paintWindowedPluginIntoContext(GraphicsContext* context, const 
     SetWorldTransform(hdc, &transform);
 
     paintIntoTransformedContext(hdc);
-
+    
     SetWorldTransform(hdc, &originalTransform);
 #endif
 }
@@ -631,6 +633,12 @@ void PluginView::paint(GraphicsContext* context, const IntRect& rect)
 
     ASSERT(parent()->isFrameView());
     IntRect rectInWindow = static_cast<FrameView*>(parent())->contentsToWindow(frameRect());
+    
+#if PLATFORM(CLUTTER)
+    context->setDrawScrollOffset(IntSize(frameRect().x()-rectInWindow.x(), frameRect().y()-rectInWindow.y()));
+    {
+#endif
+
     LocalWindowsContext windowsContext(context, rectInWindow, m_isTransparent);
 
     // On Safari/Windows without transparency layers the GraphicsContext returns the HDC
@@ -648,6 +656,11 @@ void PluginView::paint(GraphicsContext* context, const IntRect& rect)
 #endif
 
     paintIntoTransformedContext(windowsContext.hdc());
+
+#if PLATFORM(CLUTTER)
+    }
+    context->setDrawScrollOffset(IntSize());
+#endif
 }
 
 void PluginView::handleKeyboardEvent(KeyboardEvent* event)
@@ -828,7 +841,7 @@ void PluginView::setNPWindowRect(const IntRect& rect)
 
         if (!m_isWindowed)
             return;
-
+            
         ASSERT(platformPluginWidget());
 
 #if OS(WINCE)
@@ -909,7 +922,7 @@ void PluginView::invalidateRect(const IntRect& rect)
 {
     if (m_isWindowed) {
         RECT invalidRect = { rect.x(), rect.y(), rect.right(), rect.bottom() };
-        ::InvalidateRect(platformPluginWidget(), &invalidRect, false);
+        ::InvalidateRect(platformPluginWidget(), &invalidRect, FALSE);
         return;
     }
 

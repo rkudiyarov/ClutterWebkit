@@ -19,7 +19,7 @@ static gchar* filenameToURL(const char* filename)
 
 void paint(cairo_t *c)
 {
-	cairo_rectangle(c, 0.0, 0.0, 512, 384);
+	cairo_rectangle(c, 0.0, 10.0, 512, 384);
 	cairo_set_source_rgb(c, 0.0, 0.0, 0.5);
 	cairo_fill(c);
 
@@ -48,9 +48,23 @@ load_finished_cb (WebKitWebView* web_view, GParamSpec* pspec, gpointer data)
 }
 
 static gboolean
+delete_cb (ClutterStage* stage, ClutterEvent* event, gpointer data)
+{
+    printf("Stage delete\n");
+    clutter_container_remove_actor(CLUTTER_CONTAINER(stage), CLUTTER_ACTOR(data));
+    g_object_unref(WEBKIT_WEB_VIEW(data));
+    return FALSE;
+}
+
+static gboolean
 timeout_cb(gpointer data)
 {
+/*    
     WebKitWebView *web_view = (WebKitWebView*)data;
+    gfloat posX, posY;
+    double offsX, offsY;
+*/
+/*
     WebkitActorRectangle uRect;
     uRect.x = 0;
     uRect.y = 0;
@@ -60,7 +74,24 @@ timeout_cb(gpointer data)
     printf("Screen refresh.\n");
     
     webkit_actor_queue_expose(WEBKIT_ACTOR(web_view), &uRect);
+*/    
+/*
+
+    cairo_t *ctx = clutter_cairo_texture_create(CLUTTER_CAIRO_TEXTURE(web_view));
+    cairo_surface_t *surf = cairo_get_target(ctx);
+    cairo_surface_get_device_offset(surf, &offsX, &offsY);
+    printf("Surface device offset: %.2f %.2f\n", offsX, offsY);
     
+    cairo_matrix_t m;
+    cairo_get_matrix(ctx, &m);
+    
+    printf("Transformation matrix:\n%7.2f %7.2f\n%7.2f %7.2f\n%7.2f %7.2f\n", m.xx, m.yx, m.xy, m.yy, m.x0, m.y0);
+    
+    paint(ctx);
+         
+    clutter_actor_get_position(CLUTTER_ACTOR(web_view), &posX, &posY);
+    printf("Position: %.2f %.2f\n", posX, posY);
+*/
     return TRUE;
 }
 
@@ -68,10 +99,15 @@ int main(int argc, char *argv[])
 {
     ClutterActor *stage;
     WebKitWebView *web_view;
-    /*
+    
     ClutterConstraint *width_binding;
     ClutterConstraint *height_binding;
-    */
+    
+    gfloat stageWidth, stageHeight;
+    ClutterActorBox stageAllocation;
+    
+    g_thread_init(NULL);
+    clutter_threads_init();
     
     clutter_init(&argc, &argv);
     
@@ -85,19 +121,22 @@ int main(int argc, char *argv[])
     
     clutter_actor_show(stage);
     
-    web_view = WEBKIT_WEB_VIEW(webkit_web_view_new(1024, 768));
+    clutter_actor_get_allocation_box(stage, &stageAllocation);
+    stageWidth = stageAllocation.x2 - stageAllocation.x1;
+    stageHeight = stageAllocation.y2 - stageAllocation.y1;
+    
+    web_view = WEBKIT_WEB_VIEW(webkit_web_view_new((guint)stageWidth, (guint)stageHeight));
     g_object_set(web_view, "reactive", TRUE, NULL);
     
     g_signal_connect(web_view, "webkit-load-finished", G_CALLBACK(load_finished_cb), web_view);
     g_signal_connect (web_view, "notify::progress", G_CALLBACK (notify_progress_cb), web_view);
+    g_signal_connect(stage, "delete-event", G_CALLBACK(delete_cb), web_view);
     
-    /*
     width_binding = clutter_bind_constraint_new(stage, CLUTTER_BIND_WIDTH, 0);
     height_binding = clutter_bind_constraint_new(stage, CLUTTER_BIND_HEIGHT, 0);
     
     clutter_actor_add_constraint(CLUTTER_ACTOR(web_view), width_binding);
     clutter_actor_add_constraint(CLUTTER_ACTOR(web_view), height_binding);
-    */
     
     clutter_container_add_actor(CLUTTER_CONTAINER(stage), CLUTTER_ACTOR(web_view));
     
@@ -107,15 +146,14 @@ int main(int argc, char *argv[])
     webkit_web_view_load_uri(web_view, fileURL ? fileURL : uri);
     printf("%s\n", fileURL);
     g_free(fileURL);
-
-/*    cairo_t *ctx = clutter_cairo_texture_create(CLUTTER_CAIRO_TEXTURE(web_view));
-    paint(ctx);
-*/    
+    
     clutter_actor_show(CLUTTER_ACTOR(web_view));
     
     g_timeout_add_full(G_PRIORITY_DEFAULT, 3000, timeout_cb, web_view, 0);
     
+    clutter_threads_enter ();
     clutter_main();
+    clutter_threads_leave ();
     
     return EXIT_SUCCESS;
 }

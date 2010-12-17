@@ -94,6 +94,9 @@ namespace WebCore {
         GraphicsContextState state;
         Vector<GraphicsContextState> stack;
         bool m_updatingControlTints;
+#if PLATFORM(CLUTTER) && OS(WINDOWS)
+        IntSize m_drawScrollOffset;
+#endif
     };
 
 } // namespace WebCore

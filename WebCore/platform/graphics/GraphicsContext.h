@@ -416,6 +416,10 @@ namespace WebCore {
         pattern getHaikuStrokeStyle();
 #endif
 
+#if PLATFORM(CLUTTER) && OS(WINDOWS)
+        void setDrawScrollOffset(const IntSize&);
+#endif
+
         void setSharedGraphicsContext3D(SharedGraphicsContext3D*, DrawingBuffer*, const IntSize&);
         void syncSoftwareCanvas();
         void markDirtyRect(const IntRect&); // Hints that a portion of the backing store is dirty.

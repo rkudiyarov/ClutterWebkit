@@ -19,6 +19,7 @@
  
 #include "config.h"
 #include "GraphicsContext.h"
+#include "GraphicsContextPrivate.h"
 
 #include <cairo.h>
 
@@ -30,6 +31,11 @@
 namespace WebCore {
 
 #if OS(WINDOWS)
+void GraphicsContext::setDrawScrollOffset(const IntSize& offset)
+{
+    m_common->m_drawScrollOffset = offset;
+}
+
 HDC GraphicsContext::getWindowsContext(const IntRect& dstRect, bool supportAlphaBlend, bool mayCreateBitmap)
 {
     // painting through native HDC is only supported for plugin, where mayCreateBitmap is always true
@@ -101,21 +107,29 @@ void GraphicsContext::releaseWindowsContext(HDC hdc, const IntRect& dstRect, boo
             GetObject(bitmap, sizeof(info), &info);
             ASSERT(info.bmBitsPixel == 32);
             
-            cairo_surface_t *pixmap = cairo_image_surface_create_for_data((unsigned char*)info.bmBits,
+            unsigned char *invPixmap = new unsigned char[info.bmWidthBytes*info.bmHeight];
+            unsigned char *src = (unsigned char*)info.bmBits + (info.bmHeight-1)*info.bmWidthBytes;
+            unsigned char *dst = invPixmap;
+            for (LONG scanLine = info.bmHeight; scanLine != 0; --scanLine) {
+                memcpy(dst, src, info.bmWidthBytes);
+                dst += info.bmWidthBytes;
+                src -= info.bmWidthBytes;
+            }
+            
+            cairo_surface_t *pixmap = cairo_image_surface_create_for_data(invPixmap,
                                                                           CAIRO_FORMAT_ARGB32,
                                                                           info.bmWidth,
                                                                           info.bmHeight,
                                                                           info.bmWidthBytes);
-//            cairo_t *pixmapCtx = cairo_create(pixmap);
-//            cairo_surface_destroy(pixmap);
             
             PlatformGraphicsContext* ctx = this->platformContext();
-            cairo_set_source_surface(ctx, pixmap, dstRect.x(), dstRect.y());
-            cairo_paint(ctx);
+            int dst_x = dstRect.x() + m_common->m_drawScrollOffset.width();
+            int dst_y = dstRect.y() + m_common->m_drawScrollOffset.height();
+            cairo_set_source_surface(ctx, pixmap, dst_x, dst_y);
+            cairo_rectangle(ctx, dst_x, dst_y, dstRect.width(), dstRect.height());
+            cairo_fill(ctx);
             cairo_surface_destroy(pixmap);
-            
-            //QPixmap pixmap = QPixmap::fromWinHBITMAP(bitmap, supportAlphaBlend ? QPixmap::PremultipliedAlpha : QPixmap::NoAlpha);
-            //m_data->p()->drawPixmap(dstRect, pixmap);
+            delete[] invPixmap;
 
             ::DeleteObject(bitmap);
         }

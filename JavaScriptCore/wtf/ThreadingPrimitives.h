@@ -43,7 +43,7 @@
 
 #if USE(PTHREADS)
 #include <pthread.h>
-#elif PLATFORM(GTK)
+#elif PLATFORM(GTK) || PLATFORM(CLUTTER)
 #include "GOwnPtr.h"
 #endif
 
@@ -65,7 +65,7 @@ typedef pthread_rwlock_t PlatformReadWriteLock;
 typedef void* PlatformReadWriteLock;
 #endif
 typedef pthread_cond_t PlatformCondition;
-#elif PLATFORM(GTK)
+#elif PLATFORM(GTK) || PLATFORM(CLUTTER)
 typedef GOwnPtr<GMutex> PlatformMutex;
 typedef void* PlatformReadWriteLock; // FIXME: Implement.
 typedef GOwnPtr<GCond> PlatformCondition;

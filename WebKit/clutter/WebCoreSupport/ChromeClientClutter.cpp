@@ -39,6 +39,7 @@
 #include "PopupMenuClutter.h"
 #include "SearchPopupMenuClutter.h"
 #include "SecurityOrigin.h"
+#include "webkitactor.h"
 #include "webkitgeolocationpolicydecision.h"
 #include "webkitwebview.h"
 #include "webkitnetworkrequest.h"
@@ -52,6 +53,8 @@
 
 #include <glib.h>
 #include <glib/gi18n-lib.h>
+
+#include <cairo.h>
 
 using namespace WebCore;
 
@@ -333,7 +336,60 @@ void ChromeClient::invalidateContentsForSlowScroll(const IntRect& updateRect, bo
 
 void ChromeClient::scroll(const IntSize& delta, const IntRect& rectToScroll, const IntRect& clipRect)
 {
-    notImplemented();
+    IntRect area = clipRect;
+    IntRect moveRect;
+
+    IntRect sourceRect = area;
+    sourceRect.move(-delta.width(), -delta.height());
+    
+    cairo_rectangle_int_t rect;
+    rect.x = area.x();
+    rect.y = area.y();
+    rect.width = area.width();
+    rect.height = area.height();
+    
+    cairo_region_t* invalidRegion = cairo_region_create_rectangle(&rect);
+    
+    moveRect = area;
+    if (moveRect.intersects(sourceRect)) {
+        moveRect.intersect(sourceRect);
+        
+        rect.x = moveRect.x();
+        rect.y = moveRect.y();
+        rect.width = moveRect.width();
+        rect.height = moveRect.height();
+        
+        cairo_region_t* moveRegion = cairo_region_create_rectangle(&rect);
+        cairo_region_t* tmpRegion = cairo_region_copy(moveRegion);
+        cairo_region_translate(moveRegion, delta.width(), delta.height());
+        cairo_region_subtract(tmpRegion, moveRegion);
+        
+        for (int i = 0; i < cairo_region_num_rectangles(tmpRegion); ++i) {
+            cairo_region_get_rectangle(tmpRegion, i, &rect);
+            WebkitActorRectangle dirty;
+            dirty.x = rect.x;
+            dirty.y = rect.y;
+            dirty.width = rect.width;
+            dirty.height = rect.height; 
+            webkit_actor_queue_expose(WEBKIT_ACTOR(m_webView), &dirty);
+        }
+        
+        cairo_region_subtract(invalidRegion, moveRegion);
+        cairo_region_destroy(tmpRegion);
+        cairo_region_destroy(moveRegion);
+    }
+
+    for (int i = 0; i < cairo_region_num_rectangles(invalidRegion); ++i) {
+        cairo_region_get_rectangle(invalidRegion, i, &rect);
+        WebkitActorRectangle dirty;
+        dirty.x = rect.x;
+        dirty.y = rect.y;
+        dirty.width = rect.width;
+        dirty.height = rect.height;
+        webkit_actor_queue_expose(WEBKIT_ACTOR(m_webView), &dirty);
+    }
+    
+    cairo_region_destroy(invalidRegion);
 }
 
 static IntPoint actorScreenPosition(ClutterActor* actor)

@@ -29,7 +29,7 @@ AC_REQUIRE([INIT_C_CXX_FLAGS])
 
 # check for -fvisibility=hidden compiler support (GCC >= 4)
 saved_CFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS -fvisibility=hidden -fvisibility-inlines-hidden"
+CFLAGS="$CFLAGS -fvisibility=hidden -fvisibility-inlines-hidden -Werror"
 AC_MSG_CHECKING([if ${CXX} supports -fvisibility=hidden -fvisibility-inlines-hidden])
 AC_COMPILE_IFELSE([char foo;],
       [ AC_MSG_RESULT([yes])

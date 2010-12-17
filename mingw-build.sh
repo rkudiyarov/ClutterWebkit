@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+PATH="/opt/mingw/mingw-cross-env-2.16/usr/bin:$PATH" WebKitTools/Scripts/build-webkit --prefix=/Users/vian/dev/win32/clutter-cross --host=i686-pc-mingw32 --clutter --minimal --with-target=win32 --debug PKG_CONFIG_PATH=/Users/vian/dev/win32/clutter-cross/lib/pkgconfig LDFLAGS="-L/Users/vian/dev/win32/clutter-cross/lib" CPPFLAGS="-I/Users/vian/dev/win32/clutter-cross/include -DU_GNUC_UTF16_STRING=0"
