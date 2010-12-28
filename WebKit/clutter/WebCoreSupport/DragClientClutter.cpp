@@ -25,7 +25,7 @@
 #include "Element.h"
 #include "Frame.h"
 #include "NotImplemented.h"
-#include "PasteboardHelper.h"
+#include "PasteboardHelperWebCoreClutter.h"
 #include "RenderObject.h"
 #include "webkitprivate.h"
 #include "webkitwebview.h"

@@ -61,6 +61,9 @@ typedef PlatformWidget PlatformPluginWidget;
 #include <QImage>
 class QPainter;
 #endif
+#if PLATFORM(CLUTTER) && defined(XP_MACOSX)
+typedef struct _cairo_surface cairo_surface_t;
+#endif
 
 #if USE(JSC)
 namespace JSC {
@@ -383,6 +386,8 @@ private:
         WindowRef m_fakeWindow;
 #if PLATFORM(QT)
         QPixmap m_pixmap;
+#elif PLATFORM(CLUTTER)
+        cairo_surface_t *m_cairoSurface;
 #endif
 
         Point m_lastMousePos;

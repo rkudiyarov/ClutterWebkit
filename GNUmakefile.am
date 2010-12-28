@@ -42,6 +42,8 @@ WebCore := $(srcdir)/WebCore
 GTESTER = gtester
 GTESTER_REPORT = gtester-report
 
+SUFFIXES = .mm
+
 # Libraries and support components
 bin_PROGRAMS :=
 noinst_PROGRAMS :=
@@ -97,6 +99,15 @@ BUILT_SOURCES :=
 CLEANFILES :=
 DISTCLEANFILES :=
 MAINTAINERCLEANFILES :=
+
+LTOBJCXXCOMPILE = $(top_builddir)/doltcompile $(CXXCOMPILE) -x objective-c++
+
+.mm.lo:
+	$(LTOBJCXXCOMPILE) \
+	$(libwebkit_clutter_@WEBKITCLUTTER_API_MAJOR_VERSION@_@WEBKITCLUTTER_API_MINOR_VERSION@_la_CXXFLAGS) \
+	$(libwebkit_clutter_@WEBKITCLUTTER_API_MAJOR_VERSION@_@WEBKITCLUTTER_API_MINOR_VERSION@_la_CPPFLAGS) \
+	$(CPPFLAGS) \
+	 -c -o $@ $<
 
 global_cppflags += \
 	-Wall -W -Wcast-align -Wchar-subscripts -Wreturn-type \
@@ -394,6 +405,11 @@ libwebkit_clutter_@WEBKITCLUTTER_API_MAJOR_VERSION@_@WEBKITCLUTTER_API_MINOR_VER
 	$(OLE32_LIBS)
 if TARGET_WIN32
 libwebkit_clutter_@WEBKITCLUTTER_API_MAJOR_VERSION@_@WEBKITCLUTTER_API_MINOR_VERSION@_la_LIBADD += -lversion
+endif
+if TARGET_QUARTZ
+libwebkit_clutter_@WEBKITCLUTTER_API_MAJOR_VERSION@_@WEBKITCLUTTER_API_MINOR_VERSION@_la_LIBADD += -lobjc
+libwebkit_clutter_@WEBKITCLUTTER_API_MAJOR_VERSION@_@WEBKITCLUTTER_API_MINOR_VERSION@_la_LDFLAGS += \
+	 -framework Carbon -framework AppKit
 endif
 endif
 

@@ -64,6 +64,7 @@
 #include <runtime/JSValue.h>
 #include <wtf/RetainPtr.h>
 
+#import <AppKit/NSImage.h>
 
 using JSC::ExecState;
 using JSC::Interpreter;
@@ -85,6 +86,13 @@ QT_END_NAMESPACE
 #if PLATFORM(WX)
 #include <wx/defs.h>
 #include <wx/wx.h>
+#endif
+
+#if PLATFORM(CLUTTER)
+#include <clutter/clutter.h>
+/*#include <clutter/clutter-osx.h>*/
+#include <cairo.h>
+#include <cairo-quartz.h>
 #endif
 
 using std::min;
@@ -111,6 +119,12 @@ static inline WindowRef nativeWindowFor(PlatformWidget widget)
 #elif PLATFORM(WX)
     if (widget)
         return (WindowRef)widget->MacGetTopLevelWindowRef();
+/*#elif PLATFORM(CLUTTER)
+    if (widget) {
+        ClutterStage *defaultStage = CLUTTER_STAGE(clutter_stage_get_default());
+        return static_cast<WindowRef>([clutter_osx_get_stage_window(defaultStage) windowRef]);
+    }
+*/
 #endif
     return 0;
 }
@@ -348,7 +362,9 @@ void PluginView::setFocus(bool focused)
 
     if (platformPluginWidget())
 #if PLATFORM(QT)
-       platformPluginWidget()->setFocus(Qt::OtherFocusReason);
+        platformPluginWidget()->setFocus(Qt::OtherFocusReason);
+#elif PLATFORM(CLUTTER)
+        ;
 #else
         platformPluginWidget()->SetFocus();
 #endif
@@ -455,6 +471,18 @@ void PluginView::updatePluginWidget()
             m_pixmap = QPixmap(m_windowRect.size());
             m_pixmap.fill(Qt::transparent);
             m_contextRef = m_pixmap.isNull() ? 0 : qt_mac_cg_context(&m_pixmap);
+#elif PLATFORM(CLUTTER)
+            if (m_cairoSurface)
+                cairo_surface_destroy(m_cairoSurface);
+            m_cairoSurface = cairo_quartz_surface_create(CAIRO_FORMAT_ARGB32, 
+                                                         m_windowRect.width(), m_windowRect.height());
+            cairo_t *cr = cairo_create(m_cairoSurface);
+            /* Set surface to translucent color (r, g, b, a) without disturbing graphics state. */
+            cairo_set_source_rgba(cr, 0, 0, 1.0, 1.0);
+            cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
+            cairo_paint(cr);
+            cairo_destroy(cr);
+            m_contextRef = m_cairoSurface ? cairo_quartz_surface_get_cg_context(m_cairoSurface) : 0;
 #endif
         }
     }
@@ -504,6 +532,14 @@ void PluginView::paint(GraphicsContext* context, const IntRect& rect)
         QPainter painter(&m_pixmap);
         painter.setCompositionMode(QPainter::CompositionMode_Clear);
         painter.fillRect(QRectF(r.origin.x, r.origin.y, r.size.width, r.size.height), Qt::transparent);
+#elif PLATFORM(CLUTTER)
+        cairo_t *cr = cairo_create(m_cairoSurface);
+        /* Set surface to translucent color (r, g, b, a) without disturbing graphics state. */
+        cairo_set_source_rgba(cr, 0, 0, 0, 1.0);
+        cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
+        cairo_rectangle(cr, r.origin.x, r.origin.y, r.size.width, r.size.height);
+        cairo_fill(cr);
+        cairo_destroy(cr);
 #endif
     }
 
@@ -527,6 +563,11 @@ void PluginView::paint(GraphicsContext* context, const IntRect& rect)
         QPainter* painter = context->platformContext();
         painter->drawPixmap(targetRect.x(), targetRect.y(), m_pixmap, 
                             targetRect.x() - frameRect().x(), targetRect.y() - frameRect().y(), targetRect.width(), targetRect.height());
+#elif PLATFORM(CLUTTER)
+        cairo_t *ctx = context->platformContext();
+        cairo_set_source_surface(ctx, m_cairoSurface, frameRect().x(), frameRect().y());
+        cairo_rectangle(ctx, targetRect.x(), targetRect.y(), targetRect.width(), targetRect.height());
+        cairo_fill(ctx);
 #endif
     }
 }
@@ -536,8 +577,10 @@ void PluginView::invalidateRect(const IntRect& rect)
     if (platformPluginWidget())
 #if PLATFORM(QT)
         platformPluginWidget()->update(convertToContainingWindow(rect));
-#else
+#elif !PLATFORM(CLUTTER)
         platformPluginWidget()->RefreshRect(convertToContainingWindow(rect));
+#else
+        ;
 #endif
     else
         invalidateWindowlessPluginRect(rect);

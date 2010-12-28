@@ -44,7 +44,7 @@
 #endif
 #endif
 
-#if PLATFORM(CF) || (PLATFORM(QT) && defined(Q_WS_MAC))
+#if PLATFORM(CF) || (PLATFORM(QT) && defined(Q_WS_MAC)) || (PLATFORM(CLUTTER) && OS(DARWIN))
 #include <CoreFoundation/CFBundle.h>
 #endif
 
@@ -80,8 +80,10 @@ typedef QLibrary* PlatformModule;
 #else
 typedef void* PlatformModule;
 #endif
-#elif PLATFORM(GTK) || PLATFORM(CLUTTER)
+#elif PLATFORM(GTK) || (PLATFORM(CLUTTER) && !OS(DARWIN))
 typedef GModule* PlatformModule;
+#elif PLATFORM(CLUTTER) && OS(DARWIN)
+typedef CFBundleRef PlatformModule;
 #elif PLATFORM(CF)
 typedef CFBundleRef PlatformModule;
 #else

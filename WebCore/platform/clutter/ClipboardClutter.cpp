@@ -27,7 +27,7 @@
 #include "Image.h"
 #include "NotImplemented.h"
 #include "Pasteboard.h"
-#include "PasteboardHelper.h"
+#include "PasteboardHelperWebCoreClutter.h"
 #include "RenderImage.h"
 #include "ScriptExecutionContext.h"
 #include "markup.h"

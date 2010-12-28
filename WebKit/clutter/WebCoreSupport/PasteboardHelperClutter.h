@@ -30,14 +30,11 @@
  */
 
 #include "Frame.h"
-#include "PasteboardHelper.h"
-
-
-using namespace WebCore;
+#include "PasteboardHelperWebCoreClutter.h"
 
 namespace WebKit {
 
-class PasteboardHelperClutter : public PasteboardHelper {
+class PasteboardHelperClutter : public WebCore::PasteboardHelper {
 public:
     PasteboardHelperClutter();
     ~PasteboardHelperClutter();

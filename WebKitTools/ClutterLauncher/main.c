@@ -50,9 +50,13 @@ load_finished_cb (WebKitWebView* web_view, GParamSpec* pspec, gpointer data)
 static gboolean
 delete_cb (ClutterStage* stage, ClutterEvent* event, gpointer data)
 {
+    g_assert(WEBKIT_IS_WEB_VIEW(data));
+    
     printf("Stage delete\n");
+    
     clutter_container_remove_actor(CLUTTER_CONTAINER(stage), CLUTTER_ACTOR(data));
-    g_object_unref(WEBKIT_WEB_VIEW(data));
+    /* g_object_unref(WEBKIT_WEB_VIEW(data)); */
+    
     return FALSE;
 }
 

@@ -3684,7 +3684,7 @@ webcoreclutter_sources += \
 	WebCore/platform/clutter/MIMETypeRegistryClutter.cpp \
 	WebCore/platform/clutter/MouseEventClutter.cpp \
 	WebCore/platform/clutter/PasteboardClutter.cpp \
-	WebCore/platform/clutter/PasteboardHelper.h \
+	WebCore/platform/clutter/PasteboardHelperWebCoreClutter.h \
 	WebCore/platform/clutter/PlatformScreenClutter.cpp \
 	WebCore/platform/clutter/PopupMenuClutter.cpp \
 	WebCore/platform/clutter/PopupMenuClutter.h \
@@ -3783,9 +3783,15 @@ else
 
 if TARGET_QUARTZ
 webcore_sources += \
-    WebCore/plugins/PluginDataNone.cpp \
-    WebCore/plugins/PluginPackageNone.cpp \
-    WebCore/plugins/PluginViewNone.cpp
+	WebCore/platform/text/cf/StringCF.cpp \
+    WebCore/platform/text/cf/StringImplCF.cpp \
+    WebCore/platform/text/mac/StringImplMac.mm \
+    WebCore/platform/mac/WebCoreNSStringExtras.mm \
+    WebCore/plugins/clutter/PluginDataClutter.cpp \
+    WebCore/plugins/mac/PluginPackageMac.cpp \
+    WebCore/plugins/mac/PluginViewMac.mm
+webcore_cppflags += \
+    -I$(srcdir)/WebCore/platform/mac
 else
 webcoreclutter_sources += \
 	WebCore/plugins/clutter/PluginDataClutter.cpp \

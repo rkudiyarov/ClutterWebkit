@@ -200,15 +200,21 @@ Vector<String> listDirectory(const String& path, const String& filter)
     if (!dir)
         return entries;
 
-    GPatternSpec *pspec = g_pattern_spec_new((filter.utf8()).data());
+    GPatternSpec *pspec = 0;
+    if (!filter.isEmpty()) 
+        pspec = g_pattern_spec_new((filter.utf8()).data());
+        
     while (const char* name = g_dir_read_name(dir)) {
-        if (!g_pattern_match_string(pspec, name))
+        if (!filter.isEmpty() && !g_pattern_match_string(pspec, name))
             continue;
 
         GOwnPtr<gchar> entry(g_build_filename(filename.data(), name, NULL));
-        entries.append(filenameToString(entry.get()));
+        // FIX: mac plugins can not be loaded when plugin directory entry is uri escaped
+        /*entries.append(filenameToString(entry.get()));*/
+        entries.append(entry.get());
     }
-    g_pattern_spec_free(pspec);
+    if (!filter.isEmpty())
+        g_pattern_spec_free(pspec);
     g_dir_close(dir);
 
     return entries;
@@ -284,10 +290,13 @@ int readFromFile(PlatformFileHandle handle, char* data, int length)
 
 bool unloadModule(PlatformModule module)
 {
-#if !OS(WINDOWS)
-    return g_module_close(module);
-#else
+#if OS(WINDOWS)
     return ::FreeLibrary(module);
+#elif OS(DARWIN)
+    CFRelease(module);
+    return true;
+#else
+    return g_module_close(module);
 #endif
 }
 }
