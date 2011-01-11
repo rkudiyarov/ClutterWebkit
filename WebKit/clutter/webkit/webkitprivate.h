@@ -154,6 +154,19 @@ extern "C" {
 //        PlatformRefPtr<GtkAdjustment> horizontalAdjustment;
 //        PlatformRefPtr<GtkAdjustment> verticalAdjustment;
 
+        guint transition_time;
+
+        ClutterTimeline* zoom_timeline;
+        ClutterAlpha* zoom_alpha;
+        ClutterAlpha* pan_alpha;
+        WTF::RefPtr<WebCore::Node> zoom_node;
+        WebkitActorRectangle zoom_rect_pre;
+        WebkitActorRectangle zoom_rect;
+        gdouble zoom_factor;
+        gint zoom_x;
+        gint zoom_y;
+        gint zoom_pad;
+        
         gboolean zoomFullContent;
         WebKitLoadStatus loadStatus;
         CString encoding;

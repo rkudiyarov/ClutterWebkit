@@ -114,6 +114,8 @@ struct _WebKitWebViewClass {
     gchar                    * (* choose_file)            (WebKitWebView        *web_view,
                                                            WebKitWebFrame       *frame,
                                                            const gchar          *old_file);
+    void                       (*load_committed)          (WebKitWebView *web_view, 
+                                                           WebKitWebFrame *frame);
     gboolean                   (* script_alert)           (WebKitWebView        *web_view,
                                                            WebKitWebFrame       *frame,
                                                            const gchar          *alert_message);
@@ -415,6 +417,26 @@ webkit_get_cache_model                          (void);
 
 WEBKIT_API WebKitDOMDocument *
 webkit_web_view_get_dom_document                (WebKitWebView        *webView);
+
+WEBKIT_API gint
+webkit_web_view_get_zoom_padding                (WebKitWebView *webView);
+
+WEBKIT_API void
+webkit_web_view_set_zoom_padding                (WebKitWebView *webView,
+                                                 gint padding);
+
+WEBKIT_API guint
+webkit_web_view_get_transition_time             (WebKitWebView *webView);
+
+WEBKIT_API void
+webkit_web_view_set_transition_time             (WebKitWebView *webView,
+                                                 guint time);
+
+WEBKIT_API void
+webkit_web_view_zoom_to_selected_node           (WebKitWebView* webView);
+
+WEBKIT_API void
+webkit_web_view_zoom_to_default                 (WebKitWebView* webView);
 
 G_END_DECLS
 

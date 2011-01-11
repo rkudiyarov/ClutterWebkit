@@ -466,19 +466,22 @@ void PluginView::updatePluginWidget()
 
     if (!platformPluginWidget()) {
         if (m_windowRect.size() != oldWindowRect.size()) {
+#if !PLATFORM(CLUTTER)
             CGContextRelease(m_contextRef);
+#endif
 #if PLATFORM(QT)
             m_pixmap = QPixmap(m_windowRect.size());
             m_pixmap.fill(Qt::transparent);
             m_contextRef = m_pixmap.isNull() ? 0 : qt_mac_cg_context(&m_pixmap);
 #elif PLATFORM(CLUTTER)
-            if (m_cairoSurface)
+            if (m_cairoSurface) {
                 cairo_surface_destroy(m_cairoSurface);
+            }
             m_cairoSurface = cairo_quartz_surface_create(CAIRO_FORMAT_ARGB32, 
                                                          m_windowRect.width(), m_windowRect.height());
             cairo_t *cr = cairo_create(m_cairoSurface);
             /* Set surface to translucent color (r, g, b, a) without disturbing graphics state. */
-            cairo_set_source_rgba(cr, 0, 0, 1.0, 1.0);
+            cairo_set_source_rgba(cr, 0, 0, 0, 1.0);
             cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
             cairo_paint(cr);
             cairo_destroy(cr);

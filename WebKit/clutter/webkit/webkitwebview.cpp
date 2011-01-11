@@ -80,6 +80,7 @@
 #include "PlatformKeyboardEvent.h"
 #include "PlatformWheelEvent.h"
 #include "ProgressTracker.h"
+#include "RenderLayer.h"
 #include "RenderView.h"
 #include "ResourceHandle.h"
 #include "ScriptValue.h"
@@ -194,7 +195,9 @@ enum {
     PROP_CUSTOM_ENCODING,
     PROP_ICON_URI,
 //    PROP_IM_CONTEXT,
-    PROP_VIEW_MODE
+    PROP_VIEW_MODE,
+    PROP_ZOOM_PADDING,
+    PROP_TRANSITION_TIME
 };
 
 static guint webkit_web_view_signals[LAST_SIGNAL] = { 0, };
@@ -421,6 +424,12 @@ static void webkit_web_view_get_property(GObject* object, guint prop_id, GValue*
     case PROP_VIEW_MODE:
         g_value_set_enum(value, webkit_web_view_get_view_mode(webView));
         break;
+    case PROP_ZOOM_PADDING:
+        g_value_set_int(value, webkit_web_view_get_zoom_padding(webView));
+        break;
+    case PROP_TRANSITION_TIME:
+        g_value_set_uint(value, webkit_web_view_get_transition_time(webView));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
     }
@@ -454,6 +463,12 @@ static void webkit_web_view_set_property(GObject* object, guint prop_id, const G
         break;
     case PROP_VIEW_MODE:
         webkit_web_view_set_view_mode(webView, static_cast<WebKitWebViewViewMode>(g_value_get_enum(value)));
+        break;
+    case PROP_ZOOM_PADDING:
+        webkit_web_view_set_zoom_padding (webView, g_value_get_int (value));
+        break;
+    case PROP_TRANSITION_TIME:
+        webkit_web_view_set_transition_time (webView, g_value_get_uint (value));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -544,6 +559,161 @@ webkit_web_view_expose(WebkitActor* actor, WebkitActorRectangle* rect)
     }
 }
 
+static double
+get_zoom_factor (WebKitWebView *webView)
+{
+    WebKitWebViewPrivate *priv = webView->priv;
+
+    if (priv->zoom_rect.width > priv->zoom_rect.height)
+        return ((double) priv->zoom_rect_pre.width) /
+               ((double) priv->zoom_rect.width);
+    else
+        return ((double) priv->zoom_rect_pre.height) /
+               ((double) priv->zoom_rect.height);
+}
+
+static void
+zoom_new_frame_cb (ClutterTimeline *timeline, gint frame_num, WebKitWebView *webView)
+{
+    WebKitWebViewPrivate *priv = webView->priv;
+    double alpha = (double)clutter_alpha_get_alpha(priv->pan_alpha);
+    
+    // Set position
+    priv->zoom_x = (int)
+                   (((double)priv->zoom_rect.x * alpha) +
+                    ((double)priv->zoom_rect_pre.x * (1.0 - alpha)));
+    priv->zoom_x -= priv->zoom_rect_pre.x;
+
+    priv->zoom_y = (int)
+                   (((double)priv->zoom_rect.y * alpha) +
+                    ((double)priv->zoom_rect_pre.y * (1.0 - alpha)));
+    priv->zoom_y -= priv->zoom_rect_pre.y;
+
+    alpha = (double)clutter_alpha_get_alpha (priv->zoom_alpha);
+    
+    // Set zoom
+    priv->zoom_factor = (1.0 - alpha) + (get_zoom_factor (webView) * alpha);
+    
+    // Queue a redraw
+    clutter_actor_queue_redraw (CLUTTER_ACTOR (webView));
+}
+
+static void
+zoom_completed_cleanup_cb (ClutterTimeline *timeline, WebKitWebView *webView)
+{
+    WebKitWebViewPrivate *priv = webView->priv;
+
+    priv->zoom_timeline = NULL;
+    g_object_unref (timeline);
+    
+    priv->zoom_factor = 1.0;
+    priv->zoom_x = 0;
+    priv->zoom_y = 0;
+}
+
+static void
+zoom_completed_transition_cb (ClutterTimeline *timeline, WebKitWebView *webView)
+{
+    WebKitWebViewPrivate *priv = webView->priv;
+    Frame* frame = core(webView)->mainFrame();
+    double zoom_factor = get_zoom_factor(webView);
+
+    // Invalidate buffer
+    // TODO: check if this works without it
+//    if (priv->slide_init > 0)
+//        priv->slide_init = 0;
+
+    frame->setPageZoomFactor(frame->pageZoomFactor() * zoom_factor);
+
+    WebkitActorPoint pt;
+    pt.x = (int)(priv->zoom_rect.x * zoom_factor);
+    pt.y = (int)(priv->zoom_rect.y * zoom_factor);
+    frame->view()->setScrollPosition(pt);
+
+    if (priv->zoom_node.get()) {
+	Document* document = frame->document();
+	document->updateLayoutIgnorePendingStylesheets();
+
+	WebkitActorRectangle bounds = priv->zoom_node->getRect();
+	bounds.x -= priv->zoom_pad;
+	bounds.y -= priv->zoom_pad;
+	bounds.width += priv->zoom_pad * 2;
+	bounds.height += priv->zoom_pad * 2;
+
+	priv->zoom_node->renderer()->enclosingLayer()->scrollRectToVisible(bounds, false, ScrollAlignment::alignCenterAlways, ScrollAlignment::alignTopAlways);
+    }
+}
+
+static void zoom_on_node(WebKitWebView* webView, Node* node)
+{
+    WebKitWebViewPrivate *priv = webView->priv;
+    Frame* frame = core(webView)->mainFrame();
+    
+    if (priv->zoom_timeline) {
+        clutter_timeline_stop (priv->zoom_timeline);
+        g_object_unref (priv->zoom_timeline);
+    }
+    
+    // Store pre-zoom and post-zoom rectangles
+    priv->zoom_rect_pre = frame->view()->windowClipRect();
+    priv->zoom_rect_pre.x = frame->view()->scrollX();
+    priv->zoom_rect_pre.y = frame->view()->scrollY();
+    
+    if (node) {
+        priv->zoom_node = node;
+	
+        priv->zoom_rect = node->getRect();
+        priv->zoom_rect.x -= priv->zoom_pad;
+        priv->zoom_rect.y -= priv->zoom_pad;
+        priv->zoom_rect.width += priv->zoom_pad * 2;
+        priv->zoom_rect.height += priv->zoom_pad * 2;
+        
+        //printf("zoom_rect.x: %d, zoom_rect.y: %d\n", priv->zoom_rect.x, priv->zoom_rect.y);
+    } else {
+        // Zoom-out case - try to keep the current page x,y if possible and
+        // zoom out to a 1.0 zoom
+        double zoom_factor;
+        
+        priv->zoom_node.clear ();
+        
+        priv->zoom_rect = frame->view()->windowClipRect();
+        priv->zoom_rect.width = (int)(priv->zoom_rect_pre.width *
+                                      frame->pageZoomFactor());
+        priv->zoom_rect.height = (int)(priv->zoom_rect_pre.height *
+                                       frame->pageZoomFactor());
+        
+        zoom_factor = get_zoom_factor (webView);
+        priv->zoom_rect.x = (int)
+            (MIN (frame->view()->scrollX() / frame->pageZoomFactor(),
+                  (frame->view()->contentsWidth() / frame->pageZoomFactor()) -
+                  priv->zoom_rect_pre.width) /
+             zoom_factor);
+        priv->zoom_rect.y = (int)
+            (MIN (frame->view()->scrollY() / frame->pageZoomFactor(),
+                  (frame->view()->contentsHeight() / frame->pageZoomFactor()) -
+                  priv->zoom_rect_pre.height) /
+             zoom_factor);
+    }
+
+    // Set up the zooming timeline
+    priv->zoom_timeline = clutter_timeline_new (priv->transition_time);
+    priv->pan_alpha = clutter_alpha_new_full (priv->zoom_timeline,
+                                              CLUTTER_LINEAR);
+
+    priv->zoom_alpha = clutter_alpha_new_full (priv->zoom_timeline,
+                                               CLUTTER_EASE_IN_SINE);
+
+    
+    g_signal_connect (priv->zoom_timeline, "new-frame",
+                      G_CALLBACK (zoom_new_frame_cb), webView);
+    g_signal_connect (priv->zoom_timeline, "completed",
+                      G_CALLBACK (zoom_completed_transition_cb), webView);
+    g_signal_connect_after (priv->zoom_timeline, "completed",
+                            G_CALLBACK (zoom_completed_cleanup_cb), webView);
+
+    clutter_timeline_start (priv->zoom_timeline);
+}
+
 static gboolean webkit_web_view_key_press_event(ClutterActor* actor, ClutterKeyEvent* event)
 {
     WebKitWebView* webView = WEBKIT_WEB_VIEW(actor);
@@ -597,7 +767,7 @@ static gboolean webkit_web_view_button_press_event(ClutterActor* actor, ClutterB
     WebKitWebView* webView = WEBKIT_WEB_VIEW(actor);
     WebKitWebViewPrivate* priv = webView->priv;
     Frame* frame = core(webView)->mainFrame();
-    gboolean return_val;
+    gboolean return_val, is_link;
 
     if (!frame->view())
 	    return FALSE;
@@ -605,6 +775,31 @@ static gboolean webkit_web_view_button_press_event(ClutterActor* actor, ClutterB
     // Handle the click and get the clicked node
     core(webView)->focusController()->setActive(frame);
     return_val = frame->eventHandler()->handleMousePressEvent(PlatformMouseEvent(event));
+    is_link = frame->eventHandler()->mousePressNode()->isLink();
+
+    // If we've double-clicked, zoom into the clicked element (but not for links)
+    if ((event->click_count == 2) && (!is_link)) {
+        gfloat ux, uy;
+        Document* document = frame->document();
+
+        // Get the element at the page coordinates
+        clutter_actor_transform_stage_point(actor, event->x, event->y, &ux, &uy);
+
+        IntPoint windowPoint((int)ux, (int)uy);
+        IntPoint point = document->view()->windowToContents(windowPoint);
+        Element* element = document->elementFromPoint(point.x(), point.y());
+        
+        // Clear selection
+        frame->selection()->clear();
+        
+        // Zoom in/out element or reset zoom if it's the previously zoomed element
+        if (element == priv->zoom_node.get())
+            zoom_on_node(webView, NULL);
+        else
+            zoom_on_node(webView, element);
+        
+        return TRUE;
+    }
     
     return return_val;
 }
@@ -760,6 +955,12 @@ typedef enum {
     WEBKIT_SCRIPT_DIALOG_PROMPT
  } WebKitScriptDialogType;
 
+static void webkit_web_view_real_load_committed(WebKitWebView *webView, WebKitWebFrame *frame)
+{
+    // Reset zoom
+    core(webView)->mainFrame()->setPageZoomFactor(1.0);
+}
+
 #if 0
 static gboolean webkit_web_view_script_dialog(WebKitWebView* webView, WebKitWebFrame* frame, const gchar* message, WebKitScriptDialogType type, const gchar* defaultValue, gchar** value)
 {
@@ -833,6 +1034,13 @@ static void webkit_web_view_dispose(GObject* object)
     WebKitWebViewPrivate* priv = webView->priv;
 
     priv->disposing = TRUE;
+    
+    if (priv->zoom_timeline) {
+        clutter_timeline_stop (priv->zoom_timeline);
+        g_object_unref (priv->zoom_timeline);
+    }
+    
+    priv->zoom_node.clear();
 
     // These smart pointers are cleared manually, because some cleanup operations are
     // very sensitive to their value. We may crash if these are done in the wrong order.
@@ -975,6 +1183,20 @@ static void webkit_web_view_paint(ClutterActor* actor)
     WebKitWebView* webView = WEBKIT_WEB_VIEW(actor);
     WebKitWebViewPrivate* priv = webView->priv;
 
+    //printf("zoom_x: %d, zoom_y: %d\n", priv->zoom_x, priv->zoom_y);
+
+    gfloat width, height;
+    ClutterActorBox box;
+
+    clutter_actor_get_allocation_box(actor, &box);
+
+    width = box.x2 - box.x1;
+    height = box.y2 - box.y1;
+    cogl_clip_push_rectangle (0, 0, width, height);
+    
+    cogl_scale (priv->zoom_factor, priv->zoom_factor, 1.0);
+    cogl_translate (-priv->zoom_x, -priv->zoom_y, 0);
+
     CLUTTER_ACTOR_CLASS(webkit_web_view_parent_class)->paint(actor);
 
     HashSet<ClutterActor*> children = priv->children;
@@ -984,6 +1206,8 @@ static void webkit_web_view_paint(ClutterActor* actor)
             clutter_actor_paint(*current);
         }
     }
+    
+    cogl_clip_pop();
 }
 
 static void
@@ -1365,8 +1589,8 @@ static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
      */
     webkit_web_view_signals[LOAD_COMMITTED] = g_signal_new("load-committed",
             G_TYPE_FROM_CLASS(webViewClass),
-            (GSignalFlags)G_SIGNAL_RUN_LAST,
-            0,
+            (GSignalFlags)(G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION),
+            G_STRUCT_OFFSET(WebKitWebViewClass, load_committed),
             NULL,
             NULL,
             g_cclosure_marshal_VOID__OBJECT,
@@ -1992,6 +2216,7 @@ static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
     webViewClass->navigation_requested = webkit_web_view_real_navigation_requested;
     webViewClass->window_object_cleared = webkit_web_view_real_window_object_cleared;
     webViewClass->choose_file = webkit_web_view_real_choose_file;
+    webViewClass->load_committed = webkit_web_view_real_load_committed;
     webViewClass->script_alert = webkit_web_view_real_script_alert;
     webViewClass->script_confirm = webkit_web_view_real_script_confirm;
     webViewClass->script_prompt = webkit_web_view_real_script_prompt;
@@ -2377,6 +2602,20 @@ static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
                                                       WEBKIT_WEB_VIEW_VIEW_MODE_WINDOWED,
                                                       WEBKIT_PARAM_READWRITE));
 
+    g_object_class_install_property(objectClass, PROP_ZOOM_PADDING,
+                                    g_param_spec_int("zoom-padding",
+                                                     "Element-zoom padding",
+                                                     "Padding, in pixels, to frame zoomed elements with",
+                                                     0, G_MAXINT, 16,
+                                                     WEBKIT_PARAM_READWRITE));
+
+    g_object_class_install_property(objectClass, PROP_TRANSITION_TIME,
+                                    g_param_spec_uint("transition-time",
+                                                     "Transition time",
+                                                     "The time to spend between transitions, in milliseconds",
+                                                     0, G_MAXUINT, 150,
+                                                     WEBKIT_PARAM_READWRITE));
+                                                     
     g_type_class_add_private(webViewClass, sizeof(WebKitWebViewPrivate));
 }
 
@@ -2696,6 +2935,11 @@ static void webkit_web_view_init(WebKitWebView* webView)
     priv->currentClickCount = 0;
     priv->previousClickButton = 0;
     priv->previousClickTime = 0;
+    
+    priv->transition_time = 150;
+    
+    priv->zoom_factor = 1.0;
+    priv->zoom_pad = 16;
 //    gtk_drag_dest_set(GTK_WIDGET(webView), static_cast<GtkDestDefaults>(0), 0, 0, static_cast<GdkDragAction>(GDK_ACTION_COPY | GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK | GDK_ACTION_PRIVATE));
 //    gtk_drag_dest_set_target_list(GTK_WIDGET(webView), pasteboardHelperInstance()->targetList());
 }
@@ -4331,4 +4575,51 @@ GList* webkit_web_view_get_context_menu(WebKitWebView* webView)
 #else
     return 0;
 #endif
+}
+
+gint
+webkit_web_view_get_zoom_padding (WebKitWebView *webView)
+{
+    WebKitWebViewPrivate *priv = webView->priv;
+    return priv->zoom_pad;
+}
+
+void
+webkit_web_view_set_zoom_padding (WebKitWebView *webView, gint padding)
+{
+    WebKitWebViewPrivate *priv = webView->priv;
+    priv->zoom_pad = padding;
+}
+
+guint
+webkit_web_view_get_transition_time (WebKitWebView *webView)
+{
+    WebKitWebViewPrivate *priv = webView->priv;
+    return priv->transition_time;
+}
+
+void
+webkit_web_view_set_transition_time (WebKitWebView *webView, guint time)
+{
+    WebKitWebViewPrivate *priv = webView->priv;
+    priv->transition_time = time;
+}
+
+void
+webkit_web_view_zoom_to_selected_node (WebKitWebView* webView)
+{
+    WebKitWebViewPrivate* priv = webView->priv;
+    Frame* frame = core(webView)->mainFrame();
+    g_return_if_fail(frame);
+
+    Document* document = frame->document();
+    Node* node = document->focusedNode();
+
+    zoom_on_node(webView, node);
+}
+
+void
+webkit_web_view_zoom_to_default (WebKitWebView* webView)
+{
+    zoom_on_node(webView, 0);
 }
