@@ -44,6 +44,13 @@ notify_progress_cb (WebKitWebView* web_view, GParamSpec* pspec, gpointer data)
 }
 
 static void
+notify_uri_cb (WebKitWebView* web_view, GParamSpec* pspec, gpointer data)
+{
+  ClutterText *uriText = CLUTTER_TEXT(data);
+  clutter_text_set_text(uriText, webkit_web_view_get_uri(web_view));
+}
+
+static void
 load_finished_cb (WebKitWebView* web_view, GParamSpec* pspec, gpointer data)
 {
     printf("Load finished.\n");
@@ -193,10 +200,6 @@ int main(int argc, char *argv[])
     
     web_view = WEBKIT_WEB_VIEW(webkit_web_view_new((guint)stageWidth, (guint)stageHeight - (toolbarHeight + statusBarHeight)));
     g_object_set(web_view, "reactive", TRUE, NULL);
-
-    g_signal_connect(web_view, "webkit-load-finished", G_CALLBACK(load_finished_cb), web_view);
-    g_signal_connect(web_view, "notify::progress", G_CALLBACK (notify_progress_cb), web_view);
-/*    g_signal_connect(stage, "delete-event", G_CALLBACK(delete_cb), web_view);*/
     
     mainLayoutContainer = clutter_box_new(mainLayout);
     clutter_actor_set_size(mainLayoutContainer, stageWidth, stageHeight);
@@ -270,10 +273,10 @@ int main(int argc, char *argv[])
     clutter_rectangle_set_border_width(CLUTTER_RECTANGLE(uriBgr), 1);
     clutter_actor_set_size(uriBgr, 400, 25);
     
-    uriText = clutter_text_new_full("Helvetica 16px", "http://www.google.com", &blackColor);
+    uriText = clutter_text_new_full("Helvetica 11px", "http://www.google.com", &blackColor);
     clutter_text_set_editable(CLUTTER_TEXT(uriText), TRUE);
     clutter_text_set_single_line_mode(CLUTTER_TEXT(uriText), TRUE);
-    clutter_actor_set_position(uriText, 5, 4);
+    clutter_actor_set_position(uriText, 5, 7);
     clutter_actor_set_size(uriText, 390, 17);
     clutter_actor_set_reactive(uriText, TRUE);
     g_signal_connect(uriText, "activate", G_CALLBACK(on_uri_activate_cb), web_view);
@@ -302,6 +305,11 @@ int main(int argc, char *argv[])
     clutter_box_layout_set_fill(CLUTTER_BOX_LAYOUT(mainLayout), CLUTTER_ACTOR(web_view), TRUE, TRUE);
 
     clutter_container_add(CLUTTER_CONTAINER(stage), mainLayoutContainer, NULL);
+    
+    g_signal_connect(web_view, "webkit-load-finished", G_CALLBACK(load_finished_cb), web_view);
+    g_signal_connect(web_view, "notify::progress", G_CALLBACK (notify_progress_cb), web_view);
+    /*    g_signal_connect(stage, "delete-event", G_CALLBACK(delete_cb), web_view);*/
+    g_signal_connect(web_view, "notify::uri", G_CALLBACK(notify_uri_cb), uriText);
     
     gchar *uri = (gchar*) (argc > 1 ? argv[1] : "http://www.google.com/");
     gchar *fileURL = filenameToURL(uri);

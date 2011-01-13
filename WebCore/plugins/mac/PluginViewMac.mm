@@ -479,12 +479,13 @@ void PluginView::updatePluginWidget()
             }
             m_cairoSurface = cairo_quartz_surface_create(CAIRO_FORMAT_ARGB32, 
                                                          m_windowRect.width(), m_windowRect.height());
-            cairo_t *cr = cairo_create(m_cairoSurface);
-            /* Set surface to translucent color (r, g, b, a) without disturbing graphics state. */
-            cairo_set_source_rgba(cr, 0, 0, 0, 1.0);
-            cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
-            cairo_paint(cr);
-            cairo_destroy(cr);
+                                             
+            // cairo_t *cr = cairo_create(m_cairoSurface);
+            // cairo_set_source_rgba(cr, 0, 0, 0, 1.0);
+            // cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
+            // cairo_paint(cr);
+            // cairo_destroy(cr);
+            
             m_contextRef = m_cairoSurface ? cairo_quartz_surface_get_cg_context(m_cairoSurface) : 0;
 #endif
         }
@@ -536,13 +537,23 @@ void PluginView::paint(GraphicsContext* context, const IntRect& rect)
         painter.setCompositionMode(QPainter::CompositionMode_Clear);
         painter.fillRect(QRectF(r.origin.x, r.origin.y, r.size.width, r.size.height), Qt::transparent);
 #elif PLATFORM(CLUTTER)
-        cairo_t *cr = cairo_create(m_cairoSurface);
-        /* Set surface to translucent color (r, g, b, a) without disturbing graphics state. */
-        cairo_set_source_rgba(cr, 0, 0, 0, 1.0);
-        cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
-        cairo_rectangle(cr, r.origin.x, r.origin.y, r.size.width, r.size.height);
-        cairo_fill(cr);
-        cairo_destroy(cr);
+        PlatformRefPtr<cairo_t> cr = adoptPlatformRef(cairo_create(m_cairoSurface));
+
+        if (!(cairo_surface_get_content(m_cairoSurface) & CAIRO_CONTENT_ALPHA)) {
+            // Attempt to fake it when we don't have an alpha channel on our
+            // pixmap.  If that's not possible, at least clear the window to
+            // avoid drawing artifacts.
+
+            // This Would not work without double buffering, but we always use it.
+            // cairo_set_source_surface(cr.get(), cairo_get_group_target(context->platformContext()),
+            //                                      -m_windowRect.x(), -m_windowRect.y());
+            cairo_set_operator(cr.get(), CAIRO_OPERATOR_SOURCE);
+        } else
+            cairo_set_operator(cr.get(), CAIRO_OPERATOR_CLEAR);
+
+        cairo_rectangle(cr.get(), r.origin.x, r.origin.y, 
+                        r.size.width, r.size.height);
+        cairo_fill(cr.get());
 #endif
     }
 
