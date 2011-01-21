@@ -76,7 +76,7 @@
 #include "PageCache.h"
 #include "Pasteboard.h"
 #include "PasteboardHelperClutter.h"
-#include "PasteboardHelper.h"
+#include "PasteboardHelperWebCoreClutter.h"
 #include "PlatformKeyboardEvent.h"
 #include "PlatformWheelEvent.h"
 #include "ProgressTracker.h"

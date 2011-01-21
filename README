@@ -1,0 +1,54 @@
+Webkit clutter backend.
+
+Compile with:
+$ cd ClutterWebkit
+$ WebKitTools/Scripts/build-webkit --clutter --minimal --debug
+
+Launch test application:
+$ cd WebKitBuild/Debug && \
+../../WebKitTools/Scripts/run-launcher --clutter --debug http://www.google.com && \
+cd ../..
+
+Linux build instructions:
+(windowed plugins do not work)
+Install packages (Ubuntu):
+
+$ sudo apt-get install aptitude
+$ sudo aptitude install libglib2.0-dev libcairo2-dev libjpeg-dev libpango1.0-dev gtk-doc libsoup2.4-dev libjson-glib-dev libenchant-dev libgdk-pixbuf2.0-dev mesa-common-dev libgl1-mesa-dev libxcomposite-dev libxdamage-dev libatk1.0-dev libicu-dev libsqlite3-dev
+
+Install Clutter 1.4.2 and its dependencies.
+
+Then build webkit with commands from above.
+
+Mac OS X build instruction:
+Install from MacPorts:
+glib2
+cairo +quartz
+pango +quartz
+libsoup
+enchant
+json-glib
+libjpeg
+libpng
+...
+
+build clutter from 
+git://github.com/thekondr/clutter-osx.git
+
+$ git clone git://github.com/thekondr/clutter-osx.git
+$ cd clutter-osx
+$ automake
+$ ./configure --prefix=/usr/local --disable-introspection --with-flavour=osx
+$ make all
+$ sudo make install
+
+Then build webkit with commands on top of this document.
+
+Windows build instructions:
+Currently only cross-compiling from Mac OS X ( using mingw-cross-env from http://mingw-cross-env.nongnu.org/ )
+and Linux is supported.
+To install dependencies you need to launch from the folder where ClutterWebkit repository has been cloned:
+    $ ClutterWebkit/mingw-cross-compile-webkit.sh
+You may have to set the PKG_CONFIG variable before running cross compile script for build to work correctly:
+$ export PKG_CONFIG=/opt/local/bin/pkg-config
+Just make it use the system pkg-config, not the mingw one.

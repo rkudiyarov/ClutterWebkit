@@ -1,6 +1,7 @@
 #include <clutter/clutter.h>
 #include <webkit/webkit.h>
 #include <stdlib.h>
+#include <string.h>
 #include <cairo.h>
 
 static const ClutterColor stage_color = { 0xff, 0xff, 0xff, 0xff };
@@ -140,6 +141,16 @@ void on_uri_activate_cb(ClutterText *self, WebKitWebView *web_view)
     webkit_web_view_load_uri(web_view, uri);
 }
 
+static
+gchar *clutter_launcher_file_path(const gchar* fileName)
+{
+    gchar *dir = g_path_get_dirname(__FILE__);
+    gchar *path = g_malloc(strlen(dir) + 1 + strlen(fileName) + 1);
+    sprintf(path, "%s/%s", dir, fileName);
+    g_free(dir);
+    return path;
+}
+
 int main(int argc, char *argv[])
 {
     ClutterActor *stage;
@@ -174,6 +185,10 @@ int main(int argc, char *argv[])
     ClutterColor blackColor = { 0, 0, 0, 255 };
     ClutterColor grayColor =  { 200, 200, 200, 255 };
     ClutterColor transparentColor = { 0, 0, 0, 0 };
+    
+    gchar *toolbarBgrPath = clutter_launcher_file_path("toolbar_bgr.png");
+    gchar *backBtnPath = clutter_launcher_file_path("back_btn.png");
+    gchar *fwdBtnPath = clutter_launcher_file_path("fwd_btn.png");
     
     g_thread_init(NULL);
     clutter_threads_init();
@@ -215,11 +230,9 @@ int main(int argc, char *argv[])
     toolbarBinLayout = clutter_bin_layout_new(CLUTTER_BIN_ALIGNMENT_FILL, CLUTTER_BIN_ALIGNMENT_CENTER);
     toolbarBinContainer = clutter_box_new(toolbarBinLayout);
     
-    toolbarBgr = clutter_texture_new_from_file("./toolbar_bgr.png", &error);
+    toolbarBgr = clutter_texture_new_from_file(toolbarBgrPath, &error);
     if (toolbarBgr == NULL) {
-      fprintf(stderr, "Can't load file: toolbar_bgr.png. Aborting...\n");
-      fprintf(stderr, "%s\n", error->message);
-      fprintf(stdout, "Working directory is: %s\n", getcwd(NULL, 0));
+      fprintf(stderr, "Can't load file: %s. Aborting...\n", toolbarBgrPath);
       exit(1);
     }
     clutter_actor_set_height(toolbarBgr, toolbarHeight);
@@ -237,9 +250,9 @@ int main(int argc, char *argv[])
     
     backFwdBtns = clutter_group_new();
     
-    backBtn = clutter_texture_new_from_file("./back_btn.png", &error);
+    backBtn = clutter_texture_new_from_file(backBtnPath, &error);
     if (backBtn == NULL) {
-      fprintf(stderr, "Can't load file: back_btn.png. Aborting...\n");
+      fprintf(stderr, "Can't load file: %s. Aborting...\n", backBtnPath);
       exit(1);
     }
     clutter_actor_set_reactive(backBtn, TRUE);
@@ -249,9 +262,9 @@ int main(int argc, char *argv[])
                       G_CALLBACK (on_back_release_cb),
                       web_view);
     
-    fwdBtn = clutter_texture_new_from_file("./fwd_btn.png", &error);
+    fwdBtn = clutter_texture_new_from_file(fwdBtnPath, &error);
     if (fwdBtn == NULL) {
-      fprintf(stderr, "Can't load file: fwd_btn.png. Aborting...\n");
+      fprintf(stderr, "Can't load file: %s. Aborting...\n", fwdBtnPath);
       exit(1);
     }
     clutter_actor_set_reactive(fwdBtn, TRUE);
@@ -315,7 +328,7 @@ int main(int argc, char *argv[])
     gchar *fileURL = filenameToURL(uri);
 
     webkit_web_view_load_uri(web_view, fileURL ? fileURL : uri);
-    printf("%s\n", fileURL);
+    printf("%s\n", fileURL ? fileURL : uri);
     g_free(fileURL);
         
     g_timeout_add_full(G_PRIORITY_DEFAULT, 3000, timeout_cb, web_view, 0);
