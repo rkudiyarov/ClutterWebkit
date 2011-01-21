@@ -287,11 +287,6 @@ AS_IF([test "$with_gtk" != "no"], [
         WEBKIT_LIBRARY_NAME="webkit_clutter_${WEBKITCLUTTER_API_MAJOR_VERSION}_${WEBKITCLUTTER_API_MINOR_VERSION}"
         WEBKIT_PLATFORM_DIR="clutter"
         BACKEND_API_VERSION=1.0
-        
-        AS_IF([test "$with_target" = "quartz"], [
-            AC_PROG_OBJC
-            AC_PROG_OBJCXX
-        ])
     ], [
         AC_MSG_ERROR([either --with-gtk or --with-clutter must be specified])
     ])
@@ -335,7 +330,7 @@ if test "$with_clutter" = "yes"; then
     PANGO_REQUIRED_VERSION=1.27.1
 fi
 
-CLUTTER_REQUIRED_VERSION=1.0
+CLUTTER_REQUIRED_VERSION=1.4
 
 # optional modules
 LIBXSLT_REQUIRED_VERSION=1.1.7
@@ -402,6 +397,7 @@ else
    fi
 
    if test "$with_target" = "x11" && test "$os_win32" = "no"; then
+	  if test "$with_gtk" != "no"; then
       # check for XT
       PKG_CHECK_MODULES([XT],
                         [xt],
@@ -416,6 +412,8 @@ else
          AC_CHECK_LIB([Xt], [XtOpenDisplay],
                       [XT_CFLAGS=""; XT_LIBS="-lXt"],
                       [AC_MSG_ERROR([X Toolkit Intrinsics library (libXt) not found])])
+      fi
+      
       fi
       AC_SUBST([XT_CFLAGS])
       AC_SUBST([XT_LIBS])
