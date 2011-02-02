@@ -1,8 +1,13 @@
 Webkit clutter backend.
 
+Current version builds only in minimal configuration and does not have support
+for features such as HTML5 database and HTML5 video tag.
+WebkitWebView actor should not have any transformation matrix applied for plugins
+to work. Plugins only work in Mac OS X and Win32.
+
 Compile with:
 $ cd ClutterWebkit
-$ WebKitTools/Scripts/build-webkit --clutter --minimal --debug
+$ WebKitTools/Scripts/build-webkit --clutter --minimal --debug --with-target=[quartz|x11|win32]
 
 Launch test application:
 $ cd WebKitBuild/Debug && \
@@ -10,11 +15,11 @@ $ cd WebKitBuild/Debug && \
 cd ../..
 
 Linux build instructions:
-(windowed plugins do not work)
+(plugins do not work)
 Install packages (Ubuntu):
 
 $ sudo apt-get install aptitude
-$ sudo aptitude install libglib2.0-dev libcairo2-dev libjpeg-dev libpango1.0-dev gtk-doc libsoup2.4-dev libjson-glib-dev libenchant-dev libgdk-pixbuf2.0-dev mesa-common-dev libgl1-mesa-dev libxcomposite-dev libxdamage-dev libatk1.0-dev libicu-dev libsqlite3-dev
+$ sudo aptitude install libglib2.0-dev libcairo2-dev libjpeg-dev libpango1.0-dev gtk-doc libsoup2.4-dev libjson-glib-dev libenchant-dev libgdk-pixbuf2.0-dev mesa-common-dev libgl1-mesa-dev libxcomposite-dev libxdamage-dev libatk1.0-dev libicu-dev libsqlite3-dev gperf bison autotools automake autoconf
 
 Install Clutter 1.4.2 and its dependencies.
 
